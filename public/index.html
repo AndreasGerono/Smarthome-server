@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="/public/style/menu.css">
+		<style>
+			.logout-form {
+				width: 300px;
+				margin: 0 auto;
+				font-family: Tahoma, Geneva, sans-serif;
+			}
+			
+			.logout-form h1{
+				text-align: center;
+				color: black;
+				font-size: 24px;
+				padding: 20px 0 0px 0;
+				font-weight: normal;
+			}
+			
+			.logout-form input[type = "submit"]{
+				width: 40%;
+				margin-left: 30%;
+				margin-right: 30%;
+				padding: 10px;
+				background-color: white;
+				border-radius: 25px;
+				border-color: black;
+				border: 1px solid #dddddd;
+				cursor: pointer;
+				font-weight: normal;
+				color: black;
+			}
+		
+		</style>
+		<title>Welcome</title>
+	</head>
+	<body>
+	
+	
+		<div class="navbar">
+			<a class="home" href="#home">home</a></span>
+			<a href="#about">about</a>
+			<a href="https://github.com/Andreasgebels" target="_blank" >github</a>
+			<a href="contact">contact</a>
+		</div>
+		
+		<div class="logout-form">
+			<h1>Zalogowano!</h1>
+			<form action="logout" method="POST">
+				<input type="submit" value="wyloguj">
+			</form>
+		</div>
+	</body>
+</html>

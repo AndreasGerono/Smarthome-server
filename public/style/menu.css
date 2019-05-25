@@ -1,0 +1,101 @@
+body{
+	margin: 0 auto 0;
+	background-color: rgba(184, 184, 184,0.1);
+}
+
+
+
+.navbar{
+	background-color: rgb(60,60,60);
+	overflow: hidden;
+	font-family: Tahoma, Geneva, sans-serif;
+	font-size: 17px;
+	font-weight: lighter;
+}
+
+.navbar a {
+	float: left;
+	color: white;
+	text-align: center;
+	padding: 7px 7px;
+	text-decoration: none;
+}
+
+
+
+.navbar a:hover {
+	
+/*	background-color: #dddddd;*/
+	color: rgb(184,184,184);
+}
+
+.navbar a.active {
+	color: rgb(184,184,184);
+}
+
+.navbar a.home {
+	background-color: #da472d;
+	color: white;
+}
+
+.navbar .logout {
+	float: right;
+}
+
+.navbar button{
+	float: right;
+	border: none;
+	height: 100%;
+	background-color: inherit;
+	font: inherit;
+	color: white;
+	padding: 7px 7px;
+	cursor: pointer;
+}
+
+.navbar button[value = "1"]{
+	color: rgb(255,90,82);
+}
+
+@media (max-width:600px) {
+	
+	.menu-toggle{
+		display: block;
+		height: 30px;
+	}
+
+	.menu-toggle:checked {
+		display: block;
+		height: 10px;
+	}
+	
+	.navbar{
+		position: relative;
+		top: 0;
+		left: 0;
+		flex-direction: column;
+		width: 100%;
+		justify-content: center;
+		align-items: center;
+/*		border-bottom: none;*/
+	}
+	
+	.navbar a, button {
+		display: flex;
+		justify-content: center;
+		padding: 0.5em 0;
+		width: 100%;
+		
+		border-bottom: 1px solid rgb(100,100,100);
+
+	}
+	
+	.navbar button{
+		border: 1px solid rgb(100,100,100);
+		border-top: none;
+		border-left: none;
+		border-right: none;
+	}
+	
+	
+}

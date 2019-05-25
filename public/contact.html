@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="/public/style/menu.css">
+		<link rel="stylesheet" type="text/css" href="/public/style/contact.css">
+		<title>Contact page</title>
+	</head>
+	<body>
+		
+		<div class="navbar">
+			<a class="home" href="/">home</a></span>
+			<a href="#about">about</a>
+			<a href="contact" class="active">contact</a>
+		</div>
+		
+		<div class="contact-form">
+			<h1>Contact me:</h1>
+			<form action="contact" method="POST">
+			<input type="text" name="name" placeholder="name" maxlength = 50 required autofocus >
+			<input type="email" id="email" name="email" placeholder="email" maxlength = 50 required>
+			<textarea name="message" placeholder="message" maxlength = 400 required></textarea>
+			<input type="submit">
+			</form>
+		</div>
+	</body>
+</html>

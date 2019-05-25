@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Login page</title>
+		
+		<link rel="stylesheet" type="text/css" href="/public/style/menu.css">
+		<link rel="stylesheet" type="text/css" href="/public/style/login.css">
+		
+		
+	</head>
+	
+
+	<body>
+		<div class="navbar">
+			<a class="home" href="/">home</a></span>
+			<a href="#about">about</a>
+			<a href="contact">contact</a>
+		</div>
+		
+	</div>
+	
+	
+		<div class="login-form">
+			<h1>Login</h1>
+			<form class="form" action="auth" method="POST">
+				<input type="text" name="username" placeholder="Username" required autofocus>
+				<input type="password" name="password" placeholder="Password" required>
+				<input type="submit">
+			</form>
+		</div>
+	</body>
+	<script>
+		setTimeout(function () {window.alert('Incorrect username or password!')}, 100);
+	</script>
+</html>
