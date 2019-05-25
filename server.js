@@ -23,7 +23,7 @@ app.use(express.static(__dirname + '/'));
 
 
 app.use(session({
-  secret: '3a5yn9c5',
+  secret: '3a5yn9c5b',
   resave: 'false',
   saveUninitialized: false
 }));
