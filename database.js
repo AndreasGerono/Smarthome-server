@@ -166,6 +166,8 @@ function deleteDevice(id) {
 }
 
 
+
+
 exports.updateDevice = updateDevice;
 exports.findDevices = findDevices;
 exports.deleteUser = deleteUser;

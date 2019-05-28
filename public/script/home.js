@@ -7,6 +7,14 @@ console.log(location.hostname)
 editButton.onclick = toogleEdit;
 updateDevices();
 
+
+
+
+function getUnit(id) {
+	this.units =  ["°C", "°C"];
+	return units[id%10-2];
+}
+
 function toogleEdit() {
 	if (parseInt(this.value)) {
 		this.textContent = 'edit';
@@ -19,7 +27,6 @@ function toogleEdit() {
 		disableAll();
 	}
 }
-
 
 function formatData(id,value,name=null) {
 	return JSON.stringify({'id': id, 'value':value, 'name' : name});
@@ -57,11 +64,16 @@ function updateDevices() {
 			removeDevices();
 			data.forEach(element => {
 				if (element.device_id%10 === 0) {
-					creatSwitch(element)
+					creatSwitch(element);
 				}
 				else if (element.device_id%10 === 1) {
-					creatSlider(element)
+					creatSlider(element);
 				}
+				else if (element.device_id%10 >= 2) {
+					createSensor(element);
+				}
+				
+				
 			});
 		}
 		catch{
@@ -71,6 +83,19 @@ function updateDevices() {
 	};
 }
 
+function createSensor(element){
+	let namePara = document.createElement('p');
+	let valuePara = document.createElement('p');
+	let div = document.createElement('div');
+	div.className = 'sensor';
+	namePara.textContent = element.device_name;
+	namePara.onclick = editElement;
+	valuePara.textContent = element.device_value + getUnit(element.device_id);
+	valuePara.id = element.device_id;
+	div.appendChild(namePara);
+	div.appendChild(valuePara);
+	containers[2].appendChild(div);
+}
 
 function creatSwitch(element) {
 	let button = document.createElement('button');
@@ -109,6 +134,7 @@ function creatSlider(element) {
 	div.appendChild(slider);
 	containers[1].appendChild(div);
 }
+
 
 function switchClick() {
 	
