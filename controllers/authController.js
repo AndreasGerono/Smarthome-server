@@ -9,7 +9,7 @@ module.exports = (req,res) => {
   connection.findUser(username, result => {
     
     if (result.length>0) {
-      if (passwordHash.verify(password,result[0].password)) {
+      if (passwordHash.verify(password,result[0].user_password)) {
         req.session.loggedin = true;
         req.session.username = username;
         res.redirect('/home');

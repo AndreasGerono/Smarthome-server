@@ -21,7 +21,7 @@ connection.connect(err => {
 
 
 function deleteUser(id) {
-	connection.query('DELETE FROM accounts WHERE id = ?', [id], err =>{
+	connection.query('DELETE FROM users WHERE id = ?', [id], err =>{
 		if (err) {
 			console.log(err);
 		}
@@ -33,7 +33,7 @@ function deleteUser(id) {
 
 
 function showUsers() {
-	connection.query('SELECT * FROM accounts', (err,rows) =>{
+	connection.query('SELECT * FROM users', (err,rows) =>{
 		if (err) {
 			console.log(err);
 		}
@@ -44,7 +44,7 @@ function showUsers() {
 }
 
 function findUser(username, callback) {
-	connection.query('SELECT * FROM accounts WHERE username = ?', [username], (err,rows) =>{
+	connection.query('SELECT * FROM users WHERE user_name = ?', [username], (err,rows) =>{
 		if (err) {
 			console.log(err);
 		}
@@ -58,9 +58,9 @@ function findUser(username, callback) {
 function addUser(username, password, email) {
 	const safePass = passwordHash.generate(password);
 	const account = {
-		username: username,
-		password: password,
-		email: email
+		user_name: username,
+		user_password: password,
+		user_email: email
 	};	
 }
 
@@ -125,11 +125,11 @@ function updateDevice(param) {
 	
 	let values;
 	if (param.value) {
-		values = param.name ? {value: param.value, name: param.name} : {value: param.value}
+		values = param.name ? {device_value: param.value, device_name: param.name} : {device_value: param.value}
 	}
 	
 	else{
-		values = param.name? {name: param.name} : {};
+		values = param.name? {device_name: param.name} : {};
 	}
 	const data = [values, param.id];
 	connection.query('UPDATE devices SET ? WHERE device_id = ?', data, (err,res)=>{

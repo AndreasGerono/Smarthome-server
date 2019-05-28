@@ -77,9 +77,9 @@ function creatSwitch(element) {
 	let div = document.createElement('div');
 	let para = document.createElement('p')
 	div.className = 'switch';
-	para.textContent = element.name;
-	button.value = element.value;
-	button.textContent = element.value ? 'ON' : 'OFF';
+	para.textContent = element.device_name;
+	button.value = element.device_value;
+	button.textContent = element.device_value ? 'ON' : 'OFF';
 	button.id = element.device_id;
 	button.onclick = switchClick;
 	para.onclick = editElement;
@@ -92,16 +92,16 @@ function creatSlider(element) {
 	let slider = document.createElement('input');
 	let div = document.createElement('div');
 	let para = document.createElement('p');
-	para.textContent = element.name;
+	para.textContent = element.device_name;
 	div.className = 'slider';
 	slider.setAttribute('type', 'range');
 	slider.setAttribute('max', '255');
 	slider.setAttribute('step', '1');
 	slider.id = element.device_id;
-	slider.value = element.value%1000;
+	slider.value = element.device_value%1000;
 	slider.onchange = sliderDrag;
 	slider.onclick = sliderClick;
-	if (element.value >= 1000) {
+	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
 	}
 	para.onclick = editElement;
