@@ -10,9 +10,7 @@
 	font-size: 24px;
 	padding: 20px 0 0 0;
 }
-.contact-form input[type="password"],
-.contact-form input[type="email"],
-.contact-form input[type="text"] {
+.contact-form input{
 	-webkit-appearance: none;  
 	width: 100%;
 	padding: 15px;

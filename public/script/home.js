@@ -153,19 +153,17 @@ function switchClick() {
 
 function sliderClick() {
 	var value = parseInt(this.value);
-	console.log(this.style.background);
 	if (this.style.background === colorEnable) {
 		this.style.background = colorDisable;
-		console.log('dis');
 	}
 	
 	else {
 		this.style.background = colorEnable;
 		value += 1000;
-		console.log('en');
 	}
 	
 	socket.send(formatData(this.id, value));
+	console.log(formatData(this.id, value));
 }
 
 function sliderDrag() {
@@ -177,6 +175,7 @@ function sliderDrag() {
 	}
 	
 	socket.send(formatData(this.id, value));
+	console.log(formatData(this.id, value));
 	setTimeout(()=>this.onclick = sliderClick, 100);
 }
 
@@ -191,6 +190,7 @@ function editElement(e) {
 				this.textContent = name;
 			}
 			socket.send(formatData(this.parentElement.children[1].id, null, name));
+			console.log(this.parentElement.children[1].id, null, name)
 		}
 		
 		else if (name != 'null'){

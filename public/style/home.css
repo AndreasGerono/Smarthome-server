@@ -10,8 +10,11 @@
 	display: flex;
 	flex-direction: column;
 	flex-basis: 100%;
-	text-align: center;
 	align-items: center;
+	text-align: center;
+	/*	jak chcesz mieć idealnie taki sam rozmiar to wywal wszystko i margin: 0 auto -> jak w formie,
+		ale tak jest playfoul		
+	*/
 }
 
 .column button{
@@ -22,7 +25,6 @@
 	border-color: black;
 	border: 2px solid #dddddd;
 	cursor: pointer;
-	font-weight: normal;
 	color: black;
 }
 
@@ -32,14 +34,13 @@
 }
 
 .column button:hover {
-/*	border: 2px solid #da472d;*/
+	background-color: rgba(184, 184, 184, 0.1);
 }
 
 .column input[type= range] {
+	-webkit-appearance: none;  
 	margin-top: 0px;
 	border-radius: 5px;
-	-webkit-appearance: none;  
-	appearance: none;
 	width: inherit;
 	height: 10px; 
 	background: #dddddd; 
@@ -50,7 +51,6 @@
 
 .column input[type= range]::-webkit-slider-thumb {
 	-webkit-appearance: none;
-	appearance: none;
 	-webkit-border-radius: 10px;
 	width: 20px; 
 	height: 20px;
@@ -65,9 +65,9 @@
 	padding-left: 50px;
 	padding-right: 50px;
 	margin-top: 20px;
+	margin-bottom: 10px;
 	border: 1px solid gray;
 	border-radius: 10px;
-	margin-bottom: 10px;
 	background-color: white;
 }
 
@@ -75,21 +75,21 @@
 	padding-bottom: 10px;
 	padding-left: 50px;
 	padding-right: 50px;
-	margin-top: 20px;
 	border: 1px solid gray;
 	border-radius: 10px;
 	margin-bottom: 10px;
 	background-color: white;
+	margin-top: 20px;
 }
 
 .slider{
 	padding-bottom: 20px;
-	margin-top: 20px;
 	padding-left: 20px;
 	padding-right: 20px;
 	border: 1px solid gray;
 	border-radius: 10px;
 	background-color: white;
+	margin-top: 20px;
 }
 
 
