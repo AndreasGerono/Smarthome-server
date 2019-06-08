@@ -8,8 +8,6 @@ editButton.onclick = toogleEdit;
 updateDevices();
 
 
-
-
 function getUnit(id) {
 	this.units =  ["°C", "°C"];
 	return units[id%10-2];
@@ -218,4 +216,3 @@ function removeDevices() {
 	let elements = document.querySelectorAll('.switch, .slider');
 	elements.forEach(element => {element.parentElement.removeChild(element)});
 }
-
