@@ -49,7 +49,6 @@ const wss = websocket.wss;
 
 
 wss.on('connection', ws => {
-  
   ws.on('message', message => {
     database.editDevices(JSON.parse(message));
     websocket.sendToOthers('update',ws);

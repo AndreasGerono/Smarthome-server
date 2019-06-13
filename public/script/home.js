@@ -213,6 +213,6 @@ function enableAll() {
 }
 
 function removeDevices() {
-	let elements = document.querySelectorAll('.switch, .slider');
+	let elements = document.querySelectorAll('.switch, .slider, .sensor');
 	elements.forEach(element => {element.parentElement.removeChild(element)});
 }
