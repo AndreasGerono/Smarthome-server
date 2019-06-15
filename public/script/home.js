@@ -229,7 +229,7 @@ function removeDevices() {
 	elements.forEach(element => {element.parentElement.removeChild(element)});
 }
 
-function removeSensor(id) {
+function removeSensors() {
 	let sensors = document.querySelectorAll('.sensor')
 	sensors.forEach(sensor => {sensor.parentElement.removeChild(sensor)});
 }
