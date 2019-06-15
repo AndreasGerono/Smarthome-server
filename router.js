@@ -57,6 +57,15 @@ router.get('/devices', (req,res) => {
 	}
 });
 
+router.get('/devices/sensors', (req,res) => {
+	if (req.session.loggedin) {
+		database.findSensors(results=>{res.json(results)});
+	}
+	else {
+		res.sendFile(path.join(__dirname + '/public/404.html'));
+	}
+});
+
 
 router.get('/*', (req,res) => {
 	res.sendFile(path.join(__dirname + '/public/404.html'));

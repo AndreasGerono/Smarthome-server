@@ -3,13 +3,15 @@ const editButton = document.querySelector('.edit');
 const colorEnable = 'rgb(255, 90, 82)';
 const colorDisable = 'rgb(221, 221, 221)';
 
+
 console.log(location.hostname)
 editButton.onclick = toogleEdit;
+setInterval(()=>{updateSensors();}, 2000);
 updateDevices();
 
 
 function getUnit(id) {
-	this.units =  ["°C", "°C"];
+	this.units =  [" °C", " °C"];
 	return units[id%10-2];
 }
 
@@ -51,15 +53,14 @@ socket.onopen = event => {
 };
 
 
-
 function updateDevices() {
 	const request = new XMLHttpRequest();
 	request.open('GET', '/devices');
 	request.send();
 	request.onload = () => {
 		try{
-			let data = JSON.parse(request.response)
 			removeDevices();
+			const data = JSON.parse(request.response)
 			data.forEach(element => {
 				if (element.device_id%10 === 0) {
 					creatSwitch(element);
@@ -69,16 +70,27 @@ function updateDevices() {
 				}
 				else if (element.device_id%10 >= 2) {
 					createSensor(element);
-				}
-				
-				
+				}	
 			});
 		}
-		catch{
-			console.log('Unable to download devices!');
+		catch(err){
+			console.log('Unable to download devices!',err);
 			location.reload();
 		}
-	};
+	}
+}
+
+function updateSensors() {
+	const request = new XMLHttpRequest();
+	request.open('GET', '/devices/sensors');
+	request.send();
+	request.onload = () => {
+		removeSensors();
+		const data = JSON.parse(request.response);
+		data.forEach(sensor => {
+		createSensor(sensor)	
+		});
+	}
 }
 
 function createSensor(element){
@@ -102,7 +114,7 @@ function creatSwitch(element) {
 	div.className = 'switch';
 	para.textContent = element.device_name;
 	button.value = element.device_value;
-	button.textContent = element.device_value ? 'ON' : 'OFF';
+	button.textContent = parseInt(element.device_value) ? 'ON' : 'OFF';
 	button.id = element.device_id;
 	button.onclick = switchClick;
 	para.onclick = editElement;
@@ -216,3 +228,9 @@ function removeDevices() {
 	let elements = document.querySelectorAll('.switch, .slider, .sensor');
 	elements.forEach(element => {element.parentElement.removeChild(element)});
 }
+
+function removeSensor(id) {
+	let sensors = document.querySelectorAll('.sensor')
+	sensors.forEach(sensor => {sensor.parentElement.removeChild(sensor)});
+}
+

@@ -78,6 +78,7 @@ function showDevices() {
 	});
 }
 
+
 function findDevices(callback) {
 	connection.query('SELECT * FROM devices', (err,rows) =>{
 		if (err) {
@@ -101,6 +102,16 @@ function findDevice(id, callback) {
 	
 }
 
+function findSensors(callback) {
+	connection.query('SELECT * FROM devices WHERE device_id%10 >= 2', (err,rows) =>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			callback(rows);
+		}
+	});
+}
 
 function addDevice(id) {
 	findDevice(id, (result) => {
@@ -122,25 +133,26 @@ function addDevice(id) {
 
 
 function updateDevice(param) {
-	
-	let values;
-	if (param.value) {
-		values = param.name ? {device_value: param.value, device_name: param.name} : {device_value: param.value}
-	}
-	
-	else{
-		values = param.name? {device_name: param.name} : {};
-	}
-	const data = [values, param.id];
-	connection.query('UPDATE devices SET ? WHERE device_id = ?', data, (err,res)=>{
-		if (err) {
-			console.log(err);
-		}
-		else {
-			console.log('Changed device:', param.id);
+	if (!isNaN(param.id)) {
+		let values;
+		if (param.value) {
+			values = param.name ? {device_value: param.value, device_name: param.name} : {device_value: param.value}
 		}
 		
-	});
+		else{
+			values = param.name? {device_name: param.name} : {};
+		}
+		const data = [values, param.id];
+		connection.query('UPDATE devices SET ? WHERE device_id = ?', data, (err,res)=>{
+			if (err) {
+				console.log(err);
+			}
+			else {
+				console.log('Changed device:', param.id);
+			}
+			
+		});
+	}
 }
 
 
@@ -175,6 +187,7 @@ exports.addUser = addUser;
 exports.findUser = findUser;
 exports.showUsers = showUsers;
 exports.editDevices = editDevices;
+exports.findSensors = findSensors;
 
 
 //function creatUser(name, password, email) {

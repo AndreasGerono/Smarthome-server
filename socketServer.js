@@ -1,6 +1,6 @@
 const net = require('net');
 const websocket = require('./webSocketServer');
-
+const database = require('./database');
 
 let clients = [];
 
@@ -13,8 +13,11 @@ function serverFunc(socket) {
 	console.log('Client: '+socket.name+'connected!');
 	
 	socket.on('data', data => {
-		console.log('From: '+socket.name+data.toString('ascii'));
-		websocket.sendToAll(data.toString('ascii'));
+		data = data.toString('ascii');
+		console.log('From: '+socket.name+data);
+		data = encodeData(data);
+		database.updateDevice(data)
+		websocket.sendToAll(JSON.stringify(data))
 	});
 	
 	socket.on('close', () => {
@@ -31,12 +34,16 @@ function serverFunc(socket) {
 
 
 exports.broadcast = message => {
-	
 	clients.forEach(client => {client.write(message)});
-	
 }
 
 exports.listen = (PORT, IP) => {
 	server.listen(PORT,IP);
 }
 
+function encodeData(data) {
+	const id = parseInt(data/10000);
+	let value = data%1000;
+	value = parseInt(value/10) + (value%10)/10
+	return {id: id, value: value}
+}
