@@ -6,17 +6,25 @@ let clients = [];
 
 const server = net.createServer(serverFunc);
 
+
 function serverFunc(socket) {
+	socket.setEncoding('utf-8');
 	socket.name = socket.remoteAddress +':'+socket.remotePort+' ';
 	clients.push(socket);
 	socket.write('Connected!\n');
 	console.log('Client: '+socket.name+'connected!');
 	
 	socket.on('data', data => {
-		data = data.toString('ascii');
-		console.log('From: '+socket.name+data);
-		data = encodeData(data);
-		database.updateDevice(data)
+		console.log('From:',socket.name,data);
+		data = encodeMessage(data);
+		if (data.value === 999.9) {
+			socket.name = data.id
+			database.addDevice(data.id)
+			websocket.sendToAll('update')
+		}
+		else {
+			database.updateDevice(data)
+		}
 		websocket.sendToAll(JSON.stringify(data))
 	});
 	
@@ -34,16 +42,25 @@ function serverFunc(socket) {
 
 
 exports.broadcast = message => {
-	clients.forEach(client => {client.write(message)});
+	clients.forEach(client => {client.write(message)}); 
 }
 
 exports.listen = (PORT, IP) => {
 	server.listen(PORT,IP);
 }
 
-function encodeData(data) {
-	const id = parseInt(data/10000);
-	let value = data%1000;
+exports.sendToDevice = (id, message) => {
+	clients.forEach(client => {
+		if (client.name === id) {
+			client.write(message)
+		}
+	});
+}
+
+
+function encodeMessage(message) {
+	const id = parseInt(message/10000);
+	let value = message%10000;
 	value = parseInt(value/10) + (value%10)/10
 	return {id: id, value: value}
 }

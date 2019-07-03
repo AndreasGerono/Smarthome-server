@@ -133,7 +133,7 @@ function addDevice(id) {
 
 
 function updateDevice(param) {
-	if (!isNaN(param.id)) {
+	if (param.id) {
 		let values;
 		if (param.value) {
 			values = param.name ? {device_value: param.value, device_name: param.name} : {device_value: param.value}
@@ -178,17 +178,15 @@ function deleteDevice(id) {
 }
 
 
-
-
 exports.updateDevice = updateDevice;
 exports.findDevices = findDevices;
 exports.deleteUser = deleteUser;
 exports.addUser = addUser;
+exports.addDevice = addDevice;
 exports.findUser = findUser;
 exports.showUsers = showUsers;
 exports.editDevices = editDevices;
 exports.findSensors = findSensors;
-
 
 //function creatUser(name, password, email) {
 //  const encryptedPassword = passwordHash.generate(password);

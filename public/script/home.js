@@ -11,7 +11,7 @@ updateDevices();
 
 
 function getUnit(id) {
-	this.units =  [" °C", " °C"];
+	const units =  [" °C", " °C"];
 	return units[id%10-2];
 }
 
@@ -100,7 +100,8 @@ function createSensor(element){
 	div.className = 'sensor';
 	namePara.textContent = element.device_name;
 	namePara.onclick = editElement;
-	valuePara.textContent = element.device_value + getUnit(element.device_id);
+	value = parseFloat(element.device_value).toFixed(1)
+	valuePara.textContent = value + getUnit(element.device_id);
 	valuePara.id = element.device_id;
 	div.appendChild(namePara);
 	div.appendChild(valuePara);
