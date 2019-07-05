@@ -8,9 +8,11 @@ const socketServer = require('./socketServer')
 
 
 const ip = require('ip');
-const IP = ip.address()
+const IP = ip.address();
 const S_PORT = 80;
 const SS_PORT = 1337;
+const WS_PORT = 8080;
+
 const app = express();
 
 //const fs = require('fs');
@@ -46,9 +48,10 @@ socketServer.listen(SS_PORT, IP);
 
 const websocket = require('./webSocketServer');
 const wss = websocket.wss;
+wss.listen(WS_PORT);
 
-
-wss.on('connection', ws => {
+wss.on('connection', (ws,req) => {
+  wss.setClientId(ws, req);
   ws.on('message', message => {
     message = JSON.parse(message)
     database.editDevices(message.id, message.value, message.name);
@@ -58,14 +61,14 @@ wss.on('connection', ws => {
       socketServer.sendToDevice(message.id, message.value);
     }
   });
+  ws.on('close', err =>{
+    wss.terminateOthers(ws);
+    console.log('disconnected on error:',err);
+  });
+  console.log('Client connected!');
+  ws.send('connected!');  
 });
 
 
-function decodeMessage(message) {
-  const obj = JSON.parse(message);
-  if (!obj.value) {
-    return 0;
-  }
-  return obj;
-}
+
 
