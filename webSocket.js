@@ -8,7 +8,7 @@ const http = require('http');
 //server = https.createServer(httpsOptions);
 const server = http.createServer()
 const wss = new websocket.Server({server});
-
+module.exports =  wss;
 
 //wss.on('connection', (ws, req) => {
 //	ws.id = req.headers.cookie;
@@ -34,27 +34,43 @@ wss.terminateOthers = ws =>{
 	});
 }
 
+wss.sendToOthers = (message, ws) => {
+	wss.clients.forEach(client =>{
+		if (ws !== client){
+			client.send(message);
+		}
+	});	
+}
+
+
 
 wss.setClientId = (ws, req) =>{
 	ws.id = req.headers.cookie;
 }
 
-function sendToAll(message) {
+wss.sendToAll = message =>{
 	wss.clients.forEach(client =>{
 		client.send(message);
 	});
 }
 
-function sendToOthers(message, ws) {
-	wss.clients.forEach(client =>{
-			if (ws !== client){
-				client.send(message);
-			}
-		});	
-}
+
+//function sendToAll(message) {
+//	wss.clients.forEach(client =>{
+//		client.send(message);
+//	});
+//}
+
+//function sendToOthers(message, ws) {
+//	wss.clients.forEach(client =>{
+//			if (ws !== client){
+//				client.send(message);
+//			}
+//		});	
+//}
 
 
-exports.wss = wss;
-exports.sendToAll = sendToAll;
-exports.sendToOthers = sendToOthers;
+//exports.wss = wss;
+//exports.sendToAll = sendToAll;
+//exports.sendToOthers = sendToOthers;
 
