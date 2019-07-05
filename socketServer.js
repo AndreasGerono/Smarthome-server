@@ -9,28 +9,28 @@ const server = net.createServer(serverFunc);
 
 function serverFunc(socket) {
 	socket.setEncoding('utf-8');
-	socket.name = socket.remoteAddress +':'+socket.remotePort+' ';
+	socket.id = 0;
 	clients.push(socket);
 	socket.write('Connected!\n');
-	console.log('Client: '+socket.name+'connected!');
+	console.log(`Client: ${socket.id} connected!`);
 	
 	socket.on('data', data => {
-		console.log('From:',socket.name,data);
+		console.log(`From: ${socket.id} ${data}`);
 		data = encodeMessage(data);
-		if (data.value === 999.9) {
-			socket.name = data.id
-			database.addDevice(data.id)
+		if (data.value == 9999) {
+			socket.id = data.id;
+			database.addDevice(data.id);
+		}
+		else if (data && socket.id) {
+			database.updateDevice(socket.id, data.value);
 			websocket.sendToAll('update')
 		}
-		else {
-			database.updateDevice(data)
-		}
-		websocket.sendToAll(JSON.stringify(data))
+		websocket.sendToAll(JSON.stringify(data));
 	});
 	
 	socket.on('close', () => {
 		clients.splice(clients.indexOf(socket),1);
-		console.log('Client: '+socket.name+'left');
+		console.log(`Client: ${socket.id} left`);
 	});
 	
 	
@@ -51,7 +51,7 @@ exports.listen = (PORT, IP) => {
 
 exports.sendToDevice = (id, message) => {
 	clients.forEach(client => {
-		if (client.name === id) {
+		if (client.name == id) {
 			client.write(message)
 		}
 	});
@@ -59,8 +59,10 @@ exports.sendToDevice = (id, message) => {
 
 
 function encodeMessage(message) {
+	if (isNaN(message)) {
+		return 0;
+	}
 	const id = parseInt(message/10000);
 	let value = message%10000;
-	value = parseInt(value/10) + (value%10)/10
-	return {id: id, value: value}
+	return {id: id.toString(), value: value.toString()}
 }

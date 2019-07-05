@@ -28,7 +28,7 @@ function toogleEdit() {
 	}
 }
 
-function formatData(id,value,name=null) {
+function formatData(id,value,name=undefined) {
 	return JSON.stringify({'id': id, 'value':value, 'name' : name});
 }
 
@@ -48,7 +48,7 @@ socket.onopen = event => {
 	
 	socket.onclose = message => {
 		console.log('Server closed on code:', message.code);
-		setTimeout(() => { location.reload() }, 150);
+//		setTimeout(() => { location.reload() }, 150);
 	};
 };
 
@@ -85,11 +85,17 @@ function updateSensors() {
 	request.open('GET', '/devices/sensors');
 	request.send();
 	request.onload = () => {
-		removeSensors();
-		const data = JSON.parse(request.response);
-		data.forEach(sensor => {
-		createSensor(sensor)	
-		});
+		try{
+			removeSensors();
+			const data = JSON.parse(request.response);
+			data.forEach(sensor => {
+			createSensor(sensor);
+			});
+		}
+		catch(err){
+			console.log('Unable to download sensors!', err);
+			location.reload();
+		}
 	}
 }
 
@@ -173,6 +179,7 @@ function sliderClick() {
 		value += 1000;
 	}
 	
+	value = value.toString();
 	socket.send(formatData(this.id, value));
 	console.log(formatData(this.id, value));
 }
@@ -185,6 +192,7 @@ function sliderDrag() {
 		value += 1000;
 	}
 	
+	value = value.toString();
 	socket.send(formatData(this.id, value));
 	console.log(formatData(this.id, value));
 	setTimeout(()=>this.onclick = sliderClick, 100);
@@ -200,7 +208,7 @@ function editElement(e) {
 			else{
 				this.textContent = name;
 			}
-			socket.send(formatData(this.parentElement.children[1].id, null, name));
+			socket.send(formatData(this.parentElement.children[1].id, undefined, name));
 			console.log(this.parentElement.children[1].id, null, name)
 		}
 		

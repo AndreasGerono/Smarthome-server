@@ -50,12 +50,12 @@ const wss = websocket.wss;
 
 wss.on('connection', ws => {
   ws.on('message', message => {
-    database.editDevices(JSON.parse(message));
-    websocket.sendToOthers('update',ws);
-    const toSend = decodeMessage(message);
-    if (toSend){
-      console.log('Wiadomość: ',toSend);
-      socketServer.broadcast(toSend);
+    message = JSON.parse(message)
+    database.editDevices(message.id, message.value, message.name);
+    websocket.sendToOthers('update', ws);
+    if (message.value){
+      console.log('Message:', message);
+      socketServer.sendToDevice(message.id, message.value);
     }
   });
 });
@@ -66,6 +66,6 @@ function decodeMessage(message) {
   if (!obj.value) {
     return 0;
   }
-  return (parseInt(obj.id)*10000+parseInt(obj.value)).toString();
+  return obj;
 }
 

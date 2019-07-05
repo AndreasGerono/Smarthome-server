@@ -132,23 +132,23 @@ function addDevice(id) {
 }
 
 
-function updateDevice(param) {
-	if (param.id) {
-		let values;
-		if (param.value) {
-			values = param.name ? {device_value: param.value, device_name: param.name} : {device_value: param.value}
+function updateDevice(id, value, name = undefined) {
+	if (id) {
+		let values = 0;
+		if (value) {
+			values = name ? {device_value: value, device_name: name} : {device_value: value};
 		}
 		
-		else{
-			values = param.name? {device_name: param.name} : {};
+		else {
+			values = name ? {device_name: name}: {};
 		}
-		const data = [values, param.id];
+		const data = [values, id];
 		connection.query('UPDATE devices SET ? WHERE device_id = ?', data, (err,res)=>{
 			if (err) {
 				console.log(err);
 			}
 			else {
-				console.log('Changed device:', param.id);
+				console.log('Changed device:', id);
 			}
 			
 		});
@@ -156,12 +156,12 @@ function updateDevice(param) {
 }
 
 
-function editDevices(param) {
-	if (param.name == 'delete'){
-		deleteDevice(param.id);
+function editDevices(id, value, name) {
+	if (name == 'delete'){
+		deleteDevice(id);
 	}
 	else {
-		updateDevice(param);
+		updateDevice(id, value, name);
 	}
 }
 
@@ -198,3 +198,4 @@ exports.findSensors = findSensors;
 //    console.log('Added ',account,' to users');
 //  });
 //}
+
