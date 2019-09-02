@@ -54,12 +54,11 @@ wss.on('connection', (ws,req) => {
       wss.setClientId(ws, req);
       ws.on('message', message => {
         message = JSON.parse(message)
-        database.editDevices(message.id, message.value, message.name);
+        database.changeDeviceValue(message.value, message.id)
+        socketServer.sendToDevice(message.id, message.value);
         wss.sendToOthers('update', ws);
-        if (message.value){
-          console.log('Message:', message);
-          socketServer.sendToDevice(message.id, message.value);
-        }
+        console.log('Message:', message);
+        
       });
       ws.on('close', err =>{
         wss.terminateOthers(ws);

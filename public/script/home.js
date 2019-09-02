@@ -75,7 +75,7 @@ function updateDevices() {
 		}
 		catch(err){
 			console.log('Unable to download devices!',err);
-			location.reload();
+//			location.reload();
 		}
 	}
 }
@@ -94,7 +94,7 @@ function updateSensors() {
 		}
 		catch(err){
 			console.log('Unable to download sensors!', err);
-			location.reload();
+//			location.reload();
 		}
 	}
 }
@@ -198,29 +198,29 @@ function sliderDrag() {
 	setTimeout(()=>this.onclick = sliderClick, 100);
 }
 
-function editElement(e) {
+
+function editElement(e){
 	if (parseInt(editButton.value)) {
-		name = window.prompt('Give a new name', this.textContent );
-		if (isWalid(name)) {
-			if (name == 'delete') {
-				this.parentElement.parentElement.removeChild(this.parentElement);
-			}
-			else{
-				this.textContent = name;
-			}
-			socket.send(formatData(this.parentElement.children[1].id, undefined, name));
-			console.log(this.parentElement.children[1].id, null, name)
+		const request = new XMLHttpRequest();
+		const name = window.prompt('New name:', this.textContent);
+		if (validateName(name)) {
+			request.open('POST', '/device');
+			request.setRequestHeader('Content-Type', 'application/json');
+			let data = formatData(this.parentElement.children[1].id, undefined, name);
+			request.send(data);
+			updateSensors();
 		}
-		
-		else if (name != 'null'){
+		else if (name != null){
 			window.alert('Wrong name!');
 		}
 	}
 }
 
-
-function isWalid(s) {
-	return s.charAt(0) !== ' ' && s != '' && s != 'null' && s.length < 20;
+function validateName(name) {
+	if (name) {
+		return name.charAt(0) !== ' ' && name != '' && name != 'null' && name.length < 20;
+	}
+	return 0;
 }
 
 function disableAll() {

@@ -131,41 +131,6 @@ function addDevice(id) {
 	});
 }
 
-
-function updateDevice(id, value, name = undefined) {
-	if (id) {
-		let values = 0;
-		if (value) {
-			values = name ? {device_value: value, device_name: name} : {device_value: value};
-		}
-		
-		else {
-			values = name ? {device_name: name}: {};
-		}
-		const data = [values, id];
-		connection.query('UPDATE devices SET ? WHERE device_id = ?', data, (err,res)=>{
-			if (err) {
-				console.log(err);
-			}
-			else {
-				console.log('Changed device:', id);
-			}
-			
-		});
-	}
-}
-
-
-function editDevices(id, value, name) {
-	if (name == 'delete'){
-		deleteDevice(id);
-	}
-	else {
-		updateDevice(id, value, name);
-	}
-}
-
-
 function deleteDevice(id) {
 	connection.query('DELETE FROM devices WHERE device_id = ?', [id], err=>{
 		if (err) {
@@ -178,15 +143,42 @@ function deleteDevice(id) {
 }
 
 
-exports.updateDevice = updateDevice;
+function changeDeviceValue(value, id) {
+	connection.query('UPDATE devices SET device_value = ? WHERE device_id = ?', [value, id], (err,res)=>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			console.log('Changed device:', id);
+		}
+	})
+	
+}
+function changeDeviceName(name, id) {
+	connection.query('UPDATE devices SET device_name = ? WHERE device_id = ?', [name, id], (err,res)=>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			console.log('Changed device:', id);
+		}
+	})
+}
+
+
+
+
 exports.findDevices = findDevices;
+exports.deleteDevice = deleteDevice;
 exports.deleteUser = deleteUser;
 exports.addUser = addUser;
 exports.addDevice = addDevice;
 exports.findUser = findUser;
 exports.showUsers = showUsers;
-exports.editDevices = editDevices;
 exports.findSensors = findSensors;
+exports.changeDeviceName = changeDeviceName;
+exports.changeDeviceValue = changeDeviceValue;
+
 
 //function creatUser(name, password, email) {
 //  const encryptedPassword = passwordHash.generate(password);

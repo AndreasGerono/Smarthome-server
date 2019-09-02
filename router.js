@@ -67,14 +67,25 @@ router.get('/devices/sensors', (req,res) => {
 });
 
 
-router.get('/*', (req,res) => {
+router.get('/*', (req, res) => {
 	res.sendFile(path.join(__dirname + '/public/404.html'));
 });
 
 
-
-
 router.post('/auth', authController);
 router.post('/contact', mailController);
+
+router.post('/device', (req, res) =>{
+	const device = req.body;
+	if (device.name == "delete") {
+		database.deleteDevice(device.id);
+	}
+	else {
+		database.changeDeviceName(device.name, device.id);
+	}
+	
+	res.send("ok");
+	
+});
 
 module.exports = router;

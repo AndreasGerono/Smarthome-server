@@ -5,7 +5,7 @@ const database = require('./database');
 let clients = [];
 
 const server = net.createServer(serverFunc);
-const INIT = 9999;
+const PAIRING = 9999;
 
 function serverFunc(socket) {
 	socket.setEncoding('utf-8');
@@ -17,7 +17,7 @@ function serverFunc(socket) {
 	socket.on('data', data => {
 		console.log(`From: ${socket.id} ${data}`);
 		data = encodeMessage(data);
-		if (data.value == INIT) {
+		if (data.value == PAIRING) {
 			socket.id = data.id;
 			database.addDevice(data.id);
 		}
