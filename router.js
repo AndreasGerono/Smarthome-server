@@ -19,7 +19,6 @@ router.get('/', (req,res) => {
 });
 
 
-
 router.get('/home', (req,res) => {
 	if (req.session.loggedin) {
 		res.sendFile(path.join(__dirname + '/public/home.html'));
@@ -36,7 +35,6 @@ router.get('/home-incorrect', (req,res) => {
 router.get('/contact', (req,res) => {
 	res.sendFile(path.join(__dirname + '/public/contact.html'));
 });
-
 
 
 router.get('/logout', (req,res) => {

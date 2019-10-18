@@ -166,7 +166,9 @@ function changeDeviceName(name, id) {
 }
 
 
-
+findDevices(device => {
+	console.log(device);
+})
 
 exports.findDevices = findDevices;
 exports.deleteDevice = deleteDevice;

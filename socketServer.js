@@ -6,6 +6,7 @@ let clients = [];
 
 const server = net.createServer(serverFunc);
 const PAIRING = 9999;
+const MESSAGE_SIZE = 4;
 
 function serverFunc(socket) {
 	socket.setEncoding('utf-8');
@@ -17,12 +18,13 @@ function serverFunc(socket) {
 	socket.on('data', data => {
 		console.log(`From: ${socket.id} ${data}`);
 		data = encodeMessage(data);
+		console.log(data.id, data.value);
 		if (data.value == PAIRING) {
 			socket.id = data.id;
 			database.addDevice(data.id);
 		}
 		else if (data && socket.id) {
-			database.updateDevice(socket.id, data.value);
+			database.changeDeviceValue(data.value, socket.id);
 		}
 		wss.sendToAll(JSON.stringify(data));
 	});
@@ -50,14 +52,29 @@ exports.listen = (PORT, IP) => {
 
 exports.sendToDevice = (id, message) => {
 	console.log(id, message);
+	message = decodeMessage(message);
 	clients.forEach(client => {
 		if (client.id == id) {
 			console.log('lol');
-			client.write(message)
+			try{
+				client.write(message)
+			}
+			catch(err){
+				
+			}
 		}
 	});
+	console.log(message);
 }
 
+
+function decodeMessage(message){
+	while (message.length < MESSAGE_SIZE) {
+			message = '0' + message;
+	}
+	message = '$' + message;	
+	return message;
+}
 
 function encodeMessage(message) {
 	if (isNaN(message)) {

@@ -209,6 +209,7 @@ function editElement(e){
 			let data = formatData(this.parentElement.children[1].id, undefined, name);
 			request.send(data);
 			updateSensors();
+			updateDevices();
 		}
 		else if (name != null){
 			window.alert('Wrong name!');
