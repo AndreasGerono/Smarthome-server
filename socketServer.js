@@ -2,18 +2,22 @@ const net = require('net');
 const wss = require('./webSocket');
 const database = require('./database');
 
-let clients = [];
 
-const server = net.createServer(serverFunc);
 const PAIRING = 9999;
 const MESSAGE_SIZE = 4;
 
+let clients = [];
+
+const server = net.createServer(serverFunc);
+
+
 function serverFunc(socket) {
 	socket.setEncoding('utf-8');
-	socket.id = 0;
+	socket.id = "NEW";
 	clients.push(socket);
 	socket.write('Connected!\n');
 	console.log(`Client: ${socket.id} connected!`);
+//	socket.setTimeout(4000);
 	
 	socket.on('data', data => {
 		console.log(`From: ${socket.id} ${data}`);
@@ -22,16 +26,29 @@ function serverFunc(socket) {
 		if (data.value == PAIRING) {
 			socket.id = data.id;
 			database.addDevice(data.id);
+			socket.write(data.id);	//response to device
+			
+//			database.getDeviceValue.then(value => socket.write(decodeMessage(value)), error => console.log(error));	//nowe
 		}
 		else if (data && socket.id) {
 			database.changeDeviceValue(data.value, socket.id);
 		}
 		wss.sendToAll(JSON.stringify(data));
+		
 	});
 	
 	socket.on('close', () => {
 		clients.splice(clients.indexOf(socket), 1);
 		console.log(`Client: ${socket.id} left`);
+	});
+	
+	
+	socket.on('timeout', () => {
+		clients.splice(clients.indexOf(socket), 1)
+		database.deActivateDevice(socket.id)
+		console.log(`Client: ${socket.id} left due  timeout`);
+		console.log(clients);
+		wss.sendToAll('update');
 	});
 	
 	
@@ -55,9 +72,8 @@ exports.sendToDevice = (id, message) => {
 	message = decodeMessage(message);
 	clients.forEach(client => {
 		if (client.id == id) {
-			console.log('lol');
 			try{
-				client.write(message)
+				setTimeout(() => client.write(message), 200);	//może coś psuć? eksperymentalnie dobrać opóźnienie
 			}
 			catch(err){
 				
@@ -70,7 +86,7 @@ exports.sendToDevice = (id, message) => {
 
 function decodeMessage(message){
 	while (message.length < MESSAGE_SIZE) {
-			message = '0' + message;
+		message = '0' + message;
 	}
 	message = '$' + message;	
 	return message;

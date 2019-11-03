@@ -6,8 +6,10 @@ const colorDisable = 'rgb(221, 221, 221)';
 
 console.log(location.hostname)
 editButton.onclick = toogleEdit;
-setInterval(()=>{updateSensors();}, 2000);
+setInterval(()=>{updateSensors()}, 2000);
 updateDevices();
+
+
 
 
 function getUnit(id) {
@@ -63,12 +65,18 @@ function updateDevices() {
 			const data = JSON.parse(request.response)
 			data.forEach(element => {
 				if (element.device_id%10 === 0) {
-					creatSwitch(element);
+					createSwitch(element);
 				}
 				else if (element.device_id%10 === 1) {
-					creatSlider(element);
+					createSlider(element);
 				}
-				else if (element.device_id%10 >= 2) {
+				
+				
+				else if (element.device_id%10 === 2) {
+					createRgbSlider(element);
+				}
+				
+				else if (element.device_id%10 > 2) {
 					createSensor(element);
 				}	
 			});
@@ -114,7 +122,8 @@ function createSensor(element){
 	containers[2].appendChild(div);
 }
 
-function creatSwitch(element) {
+function createSwitch(element) {
+	console.log(element);
 	let button = document.createElement('button');
 	let div = document.createElement('div');
 	let para = document.createElement('p')
@@ -130,24 +139,44 @@ function creatSwitch(element) {
 	containers[0].appendChild(div);
 }
 
-function creatSlider(element) {
+function createSlider(element) {
 	let slider = document.createElement('input');
 	let div = document.createElement('div');
 	let para = document.createElement('p');
 	para.textContent = element.device_name;
-	div.className = 'slider';
+	div.className = 'brightness';
 	slider.setAttribute('type', 'range');
 	slider.setAttribute('max', '255');
 	slider.setAttribute('step', '1');
 	slider.id = element.device_id;
 	slider.value = element.device_value%1000;
-	slider.onchange = sliderDrag;
+	slider.oninput = sliderDrag;
 	slider.onclick = sliderClick;
+	slider.onmouseup = sliderMouseUp;
 	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
 	}
 	para.onclick = editElement;
 	div.appendChild(para);
+	div.appendChild(slider);
+	containers[1].appendChild(div);
+}
+
+
+
+function createRgbSlider(element) {
+	let slider = document.createElement('input');
+	let div = document.createElement('div');
+	div.className = 'rgb';
+	slider.setAttribute('type', 'range');
+	slider.setAttribute('max', '340');
+	slider.setAttribute('step', '1');
+	slider.id = element.device_id;
+	slider.className = 'rgb';
+	slider.value = element.device_value;
+	slider.oninput = sliderRgbDrag;
+//	slider.onmouseup = sliderRgbMouseUp;
+//	slider.style.background = `hsl(${slider.value}, 100%, 50%)`;
 	div.appendChild(slider);
 	containers[1].appendChild(div);
 }
@@ -168,6 +197,8 @@ function switchClick() {
 
 }
 
+
+
 function sliderClick() {
 	var value = parseInt(this.value);
 	if (this.style.background === colorEnable) {
@@ -184,8 +215,21 @@ function sliderClick() {
 	console.log(formatData(this.id, value));
 }
 
+function sliderMouseUp() {
+	setTimeout(()=>this.onclick = sliderClick, 100);
+	
+}
+
+
+function sliderRgbMouseUp() {
+	this.setAttribute("style", "background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(36, 100%, 50%), hsl(72, 100%, 50%), hsl(108, 100%, 50%), hsl(144, 100%, 50%), hsl(180, 100%, 50%), hsl(216, 100%, 50%), hsl(252, 100%, 50%), hsl(288, 100%, 50%), hsl(324, 100%, 50%), hsl(360, 100%, 50%))");	
+}
+
+
+
+
 function sliderDrag() {
-	this.onclick = 0;
+	this.onclick = null;
 	var value = parseInt(this.value);
 		
 	if (this.style.background === colorEnable) {
@@ -195,7 +239,14 @@ function sliderDrag() {
 	value = value.toString();
 	socket.send(formatData(this.id, value));
 	console.log(formatData(this.id, value));
-	setTimeout(()=>this.onclick = sliderClick, 100);
+	
+}
+
+function sliderRgbDrag() {
+//	this.parentElement.style.background = `hsl(${this.value}, 100%, 50%)`;
+	
+	socket.send(formatData(this.id, this.value));
+	console.log(formatData(this.id, this.value));
 }
 
 

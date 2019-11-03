@@ -5,7 +5,7 @@ settings = {
 	host: 'localhost',
 	user: 'node1',
 	password: 'windows1234',
-	database: 'nodelogin'
+	database: 'smarthome'
 }
 
 
@@ -18,10 +18,28 @@ connection.connect(err => {
 	console.log('Connected to database!');
 });
 
+function addUser(username, password) {
+	findUser(username, result => {
+		if (result.length > 0){
+			console.log("User already exist!")
+			return 0;
+		}
+		const hashPassword = passwordHash.generate(password);
+		const user = {user_name: username, user_password: hashPassword};
+		connection.query('INSERT INTO users SET ?', user, function (err,res) {
+			if (err) {
+				console.log(err);
+			}
+		console.log('Added ',username,' to users');
+		return 1;
+		});
+	})
+}
+
 
 
 function deleteUser(id) {
-	connection.query('DELETE FROM users WHERE id = ?', [id], err =>{
+	connection.query('DELETE FROM users WHERE user_id = ?', [id], err =>{
 		if (err) {
 			console.log(err);
 		}
@@ -53,17 +71,6 @@ function findUser(username, callback) {
 		}
 	});
 }
-
-
-function addUser(username, password, email) {
-	const safePass = passwordHash.generate(password);
-	const account = {
-		user_name: username,
-		user_password: password,
-		user_email: email
-	};	
-}
-
 
 function showDevices() {
 	connection.query('SELECT * FROM devices', (err, rows) =>{
@@ -103,7 +110,7 @@ function findDevice(id, callback) {
 }
 
 function findSensors(callback) {
-	connection.query('SELECT * FROM devices WHERE device_id%10 >= 2', (err,rows) =>{
+	connection.query('SELECT * FROM devices WHERE device_id%10 > 2', (err,rows) =>{
 		if (err) {
 			console.log(err);
 		}
@@ -116,12 +123,13 @@ function findSensors(callback) {
 function addDevice(id) {
 	findDevice(id, (result) => {
 		if (result.length === 0) {
-			connection.query('INSERT INTO devices SET device_id =  ?', [id], (err, res)=>{
+			let values = {device_id: id};
+			connection.query('INSERT INTO devices SET ?', [values], (err, res)=>{
 					if (err) {
 						console.log(err);
 					}
 					else {
-						console.log('Added ',id,' to devices');
+						console.log(`Added ${id} to devices`);
 					}
 				});
 		}
@@ -152,7 +160,6 @@ function changeDeviceValue(value, id) {
 			console.log('Changed device:', id);
 		}
 	})
-	
 }
 function changeDeviceName(name, id) {
 	connection.query('UPDATE devices SET device_name = ? WHERE device_id = ?', [name, id], (err,res)=>{
@@ -165,11 +172,115 @@ function changeDeviceName(name, id) {
 	})
 }
 
+function getDeviceValue(id) {
+	return new Promise( (resolve, reject) => {
+		findDevice(id, device => {
+			if (device[0]) {
+				resolve(device[0].device_value);
+			}
+			else {
+				reject("Device not found!!");
+			}
+		});
+	});
+}
 
-findDevices(device => {
-	console.log(device);
+
+function activateDevice(id) {
+	connection.query('UPDATE devices SET device_is_active = ? WHERE device_id = ?', [true, id], (err,res)=>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			console.log('Changed device:', id);
+		}
+	})
+}
+
+function deActivateDevice(id) {
+	connection.query('UPDATE devices SET device_is_active = ? WHERE device_id = ?', [false, id], (err,res)=>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			console.log('Changed device:', id);
+		}
+	})
+}
+
+function addUserDevice(username, device_id) {
+	findUser(username, result => { 
+		if (result.length > 0) {
+			let user_device = {device_id: device_id, user_id: result[0].user_id};
+			connection.query('INSERT INTO user_device SET?', user_device, (err, res) => {
+				if (err){
+					console.log(err)
+				}
+				else{
+					console.log(`Added device ${device_id} to user ${username}`)	
+				}
+			});
+		}
+	});
+}
+
+function deleteUserDevice(username, device_id) {
+	findUser(username, result => { 
+		if (result.length > 0) {
+			connection.query('DELETE FROM user_device WHERE device_id = ? AND user_id = ?', [device_id, result[0].user_id], (err, res) => {
+				if (err){
+					console.log(err)
+				}
+				else{
+					console.log(`Removed device ${device_id} from user ${username}`)	
+				}
+			});
+		}
+	});
+}
+
+
+
+function findUserDevice(username) {
+	findUser(username, result => { 
+		if (result.length > 0) {
+			connection.query('select * from devices d inner join user_device uc on d.device_id = uc.device_id Where user_id = ?', [result[0].user_id], (err, rows) => {
+				if (err){
+					console.log(err)
+				}
+				else{
+					console.log(`${username} devices:`, rows)	
+				}
+			});
+		}
+	});
+}
+
+findDevices(devices => {
+	console.log(devices);
 })
 
+
+//showUsers();
+
+//let deviceValue = getDeviceValue(10)
+//deviceValue.then(value => console.log(value), error => console.log(error));
+
+
+//addUser("admin2", "admin");
+//findUserDevice("julita")
+
+//addUserDevice("julita", 21)
+
+
+//addDevice(22);
+
+//deleteDevice(22);
+
+
+exports.getDeviceValue = getDeviceValue;
+exports.activateDevice = activateDevice;
+exports.deActivateDevice = deActivateDevice;
 exports.findDevices = findDevices;
 exports.deleteDevice = deleteDevice;
 exports.deleteUser = deleteUser;
@@ -181,15 +292,4 @@ exports.findSensors = findSensors;
 exports.changeDeviceName = changeDeviceName;
 exports.changeDeviceValue = changeDeviceValue;
 
-
-//function creatUser(name, password, email) {
-//  const encryptedPassword = passwordHash.generate(password);
-//  const account = {username: name, password: encryptedPassword, email: email};
-//  connection.query('INSERT INTO accounts SET ?', account, function (err,res) {
-//    if (err) {
-//       console.log(err);
-//    }
-//    console.log('Added ',account,' to users');
-//  });
-//}
 
