@@ -7,6 +7,7 @@ const PAIRING = 9999;
 const MESSAGE_SIZE = 4;
 
 let clients = [];
+let devices = new Map();
 
 const server = net.createServer(serverFunc);
 
@@ -27,25 +28,31 @@ function serverFunc(socket) {
 			socket.id = data.id;
 			database.addDevice(data.id);
 			socket.write(data.id);	//response to device
-			
-//			database.getDeviceValue.then(value => socket.write(decodeMessage(value)), error => console.log(error));	//nowe
+			wss.sendToAll('update');
+			devices.set(socket, data.id);	//Devices per socket container
 		}
 		else if (data && socket.id) {
 			database.changeDeviceValue(data.value, socket.id);
 		}
-		wss.sendToAll(JSON.stringify(data));
 		
+		database.activateDevice(socket.id);	//NEW
+		wss.sendToAll(JSON.stringify(data));
+		console.log("devices: ", devices.get(socket));
 	});
 	
 	socket.on('close', () => {
 		clients.splice(clients.indexOf(socket), 1);
 		console.log(`Client: ${socket.id} left`);
+		database.deactivateDevice(socket.id);
+		database.changeDeviceValue("0", socket.id);
+		wss.sendToAll('update');
 	});
 	
 	
 	socket.on('timeout', () => {
-		clients.splice(clients.indexOf(socket), 1)
-		database.deActivateDevice(socket.id)
+		clients.splice(clients.indexOf(socket), 1);
+		database.deactivateDevice(socket.id);
+		database.changeDeviceValue("0", socket.id);
 		console.log(`Client: ${socket.id} left due  timeout`);
 		console.log(clients);
 		wss.sendToAll('update');

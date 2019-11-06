@@ -9,8 +9,23 @@
 	width: 100%;
 }
 
+.row .name{
+	border-top: 2px solid #dddddd;
+	border-bottom: 2px solid #dddddd;
+/*	background-color: white;*/
+	color: gray;
+	align-self: stretch;
+	padding: 2px;
+/*	text-align: center;*/
+}
+
+
+.disabled{
+	background-color: black;
+}
+
 .column{
-	padding-top: 50px;
+	margin-top: -16px;
 	display: flex;
 	flex-direction: column;
 	flex-basis: 100%;
@@ -21,10 +36,11 @@
 	*/
 }
 
+
 .column button{
 	width: 50px;
 	height: 50px;
-	background-color: white;
+	background-color: rgba(184, 184, 184, 0.1);
 	border-radius: 24px;
 	border-color: black;
 	border: 2px solid #dddddd;
@@ -32,38 +48,35 @@
 	color: black;
 }
 
+.column .disabled button{
+	background-color: rgba(184, 184, 184, 0.1);
+}
 
 .column button[value = "1"]{
 	border: 2px solid rgb(255,90,82);
 }
 
-.column button:hover {
-	background-color: rgba(184, 184, 184, 0.1);
+.column button:hover:enabled {
+	background-color: rgba(184, 184, 184, 0.2);
 }
 
 .column input[type= range] {
 	-webkit-appearance: none;  
-	width: inherit;
-	background: #dddddd; 
-	outline: none; 
-	opacity: 0.8; 
+/*	outline: none; */
+/*	opacity: 0.8; */
 }
 
 .column .brightness input[type= range] {
 	height: 10px;
 	border-radius: 5px;
 	margin-top: 0px;
-	
-
 }
 
 .column .rgb input[type= range] {
 	height: 40px;
 	border-radius: 8px;
 	width: 180px;
-	margin-top: 1px;
-	margin-left: 20px;
-	margin-right: 20px;
+
 	
 	
 	background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(36, 100%, 50%), hsl(72, 100%, 50%), hsl(108, 100%, 50%), hsl(144, 100%, 50%), hsl(180, 100%, 50%), hsl(216, 100%, 50%), hsl(252, 100%, 50%), hsl(288, 100%, 50%), hsl(324, 100%, 50%), hsl(360, 100%, 50%))
@@ -92,6 +105,13 @@
 }
 
 
+.disabled{
+	background-color: rgba(184, 184, 184, 0.1);
+}
+
+.enabled{
+	background-color: white;
+}
 
 .sensor{
 	padding-bottom: 10px;
@@ -101,7 +121,7 @@
 	margin-bottom: 10px;
 	border: 1px solid gray;
 	border-radius: 10px;
-	background-color: white;
+	
 }
 
 .switch{
@@ -111,7 +131,6 @@
 	border: 1px solid gray;
 	border-radius: 10px;
 	margin-bottom: 10px;
-	background-color: white;
 	margin-top: 20px;
 }
 
@@ -121,7 +140,6 @@
 	padding-right: 20px;
 	border: 1px solid gray;
 	border-radius: 10px;
-	background-color: white;
 	margin-top: 20px;
 }
 
@@ -129,7 +147,9 @@
 	display: flex;
 	align-items: center;
 	flex-direction: row;
-/*	padding-left: 20px;*/
+	border-radius: 10px;
+	border: 1px solid gray;
+	padding-left: -10px;
 /*	padding-right: 20px;*/
 /*	*/
 	

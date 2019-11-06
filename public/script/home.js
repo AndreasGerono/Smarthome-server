@@ -50,7 +50,7 @@ socket.onopen = event => {
 	
 	socket.onclose = message => {
 		console.log('Server closed on code:', message.code);
-//		setTimeout(() => { location.reload() }, 150);
+		setTimeout(() => { location.reload() }, 150);
 	};
 };
 
@@ -89,20 +89,22 @@ function updateDevices() {
 }
 
 function updateSensors() {
-	const request = new XMLHttpRequest();
-	request.open('GET', '/devices/sensors');
-	request.send();
-	request.onload = () => {
-		try{
-			removeSensors();
-			const data = JSON.parse(request.response);
-			data.forEach(sensor => {
-			createSensor(sensor);
-			});
-		}
-		catch(err){
-			console.log('Unable to download sensors!', err);
-//			location.reload();
+	if (editButton.textContent === 'edit') {
+		const request = new XMLHttpRequest();
+		request.open('GET', '/devices/sensors');
+		request.send();
+		request.onload = () => {
+			try{
+				removeSensors();
+				const data = JSON.parse(request.response);
+				data.forEach(sensor => {
+				createSensor(sensor);
+				});
+			}
+			catch(err){
+				console.log('Unable to download sensors!', err);
+				location.reload();
+			}
 		}
 	}
 }
@@ -111,7 +113,13 @@ function createSensor(element){
 	let namePara = document.createElement('p');
 	let valuePara = document.createElement('p');
 	let div = document.createElement('div');
-	div.className = 'sensor';
+	if (element.device_is_active == 0){
+		div.className = 'sensor disabled';
+	}
+	else{
+		div.className = 'sensor enabled';
+	}
+	console.log(element.device_is_active);
 	namePara.textContent = element.device_name;
 	namePara.onclick = editElement;
 	value = parseFloat(element.device_value).toFixed(1)
@@ -123,11 +131,16 @@ function createSensor(element){
 }
 
 function createSwitch(element) {
-	console.log(element);
 	let button = document.createElement('button');
 	let div = document.createElement('div');
-	let para = document.createElement('p')
-	div.className = 'switch';
+	let para = document.createElement('p');
+	if (element.device_is_active == 0) {
+		div.className = 'switch disabled';
+		button.disabled = true;
+	}
+	else{		
+		div.className = 'switch enabled';
+	}
 	para.textContent = element.device_name;
 	button.value = element.device_value;
 	button.textContent = parseInt(element.device_value) ? 'ON' : 'OFF';
@@ -144,7 +157,14 @@ function createSlider(element) {
 	let div = document.createElement('div');
 	let para = document.createElement('p');
 	para.textContent = element.device_name;
-	div.className = 'brightness';
+	
+	if (element.device_is_active == 0) {
+		div.className = 'brightness disabled';
+		slider.disabled = true;
+	}
+	else {
+		div.className = 'brightness enabled';
+	}
 	slider.setAttribute('type', 'range');
 	slider.setAttribute('max', '255');
 	slider.setAttribute('step', '1');
@@ -167,16 +187,22 @@ function createSlider(element) {
 function createRgbSlider(element) {
 	let slider = document.createElement('input');
 	let div = document.createElement('div');
-	div.className = 'rgb';
+	let para = document.createElement('p');
+	if (element.device_is_active == 0) {
+		div.className = 'rgb disabled';
+		slider.disabled = true;
+	}
+	else {
+		div.className = 'rgb enabled';
+	}
 	slider.setAttribute('type', 'range');
 	slider.setAttribute('max', '340');
-	slider.setAttribute('step', '1');
+	slider.setAttribute('step', '2');
 	slider.id = element.device_id;
 	slider.className = 'rgb';
 	slider.value = element.device_value;
 	slider.oninput = sliderRgbDrag;
-//	slider.onmouseup = sliderRgbMouseUp;
-//	slider.style.background = `hsl(${slider.value}, 100%, 50%)`;
+	div.appendChild(para);
 	div.appendChild(slider);
 	containers[1].appendChild(div);
 }
@@ -242,16 +268,14 @@ function sliderDrag() {
 	
 }
 
-function sliderRgbDrag() {
-//	this.parentElement.style.background = `hsl(${this.value}, 100%, 50%)`;
-	
+function sliderRgbDrag() {	
 	socket.send(formatData(this.id, this.value));
 	console.log(formatData(this.id, this.value));
 }
 
 
 function editElement(e){
-	if (parseInt(editButton.value)) {
+	if (editButton.textContent !== 'edit') {
 		const request = new XMLHttpRequest();
 		const name = window.prompt('New name:', this.textContent);
 		if (validateName(name)) {
@@ -276,17 +300,30 @@ function validateName(name) {
 }
 
 function disableAll() {
-	let elements = document.querySelectorAll('.switch, .slider');
-	elements.forEach(element => {element.children[1].disabled = true});
+	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
+	try{
+		elements.forEach(element => {
+		element.children[1].disabled = true;
+		console.log(element);
+		});
+	}
+	catch(error){};
 }
 
 function enableAll() {
-	let elements = document.querySelectorAll('.switch, .slider');
-	elements.forEach(element => {element.children[1].disabled = false});
+	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
+	try{
+		elements.forEach(element => {
+		element.children[1].disabled = false;
+//		element.classList.remove("disabled");
+//		element.classList.add("enabled");
+		});
+	}
+	catch(error){};
 }
 
 function removeDevices() {
-	let elements = document.querySelectorAll('.switch, .slider, .sensor');
+	let elements = document.querySelectorAll('.switch, .slider, .sensor, .rgb, .brightness');
 	elements.forEach(element => {element.parentElement.removeChild(element)});
 }
 

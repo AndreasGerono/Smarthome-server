@@ -29,8 +29,9 @@ function addUser(username, password) {
 		connection.query('INSERT INTO users SET ?', user, function (err,res) {
 			if (err) {
 				console.log(err);
+				return 0;
 			}
-		console.log('Added ',username,' to users');
+		console.log(`Added  ${username} to users`);
 		return 1;
 		});
 	})
@@ -44,7 +45,7 @@ function deleteUser(id) {
 			console.log(err);
 		}
 		else {
-			console.log('User',id,'deleted from database');
+			console.log(`User ${id} deleted from database`);
 		}
 	});
 }
@@ -139,13 +140,14 @@ function addDevice(id) {
 	});
 }
 
-function deleteDevice(id) {
-	connection.query('DELETE FROM devices WHERE device_id = ?', [id], err=>{
+function deleteDevice(id) {	//Removes all peripherals from one device
+	id = parseInt(Math.floor(id/10));
+	connection.query('DELETE FROM devices WHERE FLOOR(device_id/10) = ?', [id], err=>{
 		if (err) {
 			console.log(err);
 		}
 		else {
-			console.log('Device',id,'deleted from database');
+			console.log(`Device ${id} deleted from database`);
 		}
 	});
 }
@@ -157,7 +159,7 @@ function changeDeviceValue(value, id) {
 			console.log(err);
 		}
 		else {
-			console.log('Changed device:', id);
+			console.log(`Changed device: ${id}`);
 		}
 	})
 }
@@ -167,7 +169,7 @@ function changeDeviceName(name, id) {
 			console.log(err);
 		}
 		else {
-			console.log('Changed device:', id);
+			console.log(`Changed device: ${id}`);
 		}
 	})
 }
@@ -186,24 +188,26 @@ function getDeviceValue(id) {
 }
 
 
-function activateDevice(id) {
-	connection.query('UPDATE devices SET device_is_active = ? WHERE device_id = ?', [true, id], (err,res)=>{
+function activateDevice(id) {	//Activates all peripherals from one device
+	id = parseInt(Math.floor(id/10));
+	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [true, id], (err,res)=>{
 		if (err) {
 			console.log(err);
 		}
 		else {
-			console.log('Changed device:', id);
+			console.log(`Changed device: ${id}`);
 		}
 	})
 }
 
-function deActivateDevice(id) {
-	connection.query('UPDATE devices SET device_is_active = ? WHERE device_id = ?', [false, id], (err,res)=>{
+function deactivateDevice(id) { //Deactivates all peripherals from one device
+	id = parseInt(Math.floor(id/10));
+	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [false, id], (err,res)=>{
 		if (err) {
 			console.log(err);
 		}
 		else {
-			console.log('Changed device:', id);
+			console.log(`Changed device: ${id}`);
 		}
 	})
 }
@@ -239,8 +243,6 @@ function deleteUserDevice(username, device_id) {
 	});
 }
 
-
-
 function findUserDevice(username) {
 	findUser(username, result => { 
 		if (result.length > 0) {
@@ -261,7 +263,7 @@ findDevices(devices => {
 })
 
 
-//showUsers();
+showUsers();
 
 //let deviceValue = getDeviceValue(10)
 //deviceValue.then(value => console.log(value), error => console.log(error));
@@ -270,17 +272,15 @@ findDevices(devices => {
 //addUser("admin2", "admin");
 //findUserDevice("julita")
 
-//addUserDevice("julita", 21)
 
+//deleteDevice(21);
+//deleteAllDevices(2);
 
-//addDevice(22);
-
-//deleteDevice(22);
 
 
 exports.getDeviceValue = getDeviceValue;
 exports.activateDevice = activateDevice;
-exports.deActivateDevice = deActivateDevice;
+exports.deactivateDevice = deactivateDevice;
 exports.findDevices = findDevices;
 exports.deleteDevice = deleteDevice;
 exports.deleteUser = deleteUser;
