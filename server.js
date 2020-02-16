@@ -54,7 +54,7 @@ wss.on('connection', (ws,req) => {
       wss.setClientId(ws, req);
       ws.on('message', message => {
         message = JSON.parse(message)
-        database.changeDeviceValue(message.value, message.id)
+        database.changeDeviceValue(message.value, message.id);
         socketServer.sendToDevice(message.id, message.value);
         wss.sendToOthers('update', ws);
         console.log('Message:', message);

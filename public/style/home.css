@@ -70,15 +70,14 @@
 	height: 10px;
 	border-radius: 5px;
 	margin-top: 0px;
+	background: rgb(221, 221, 221);
+	border: 1px solid gray;
 }
 
 .column .rgb input[type= range] {
 	height: 40px;
 	border-radius: 8px;
 	width: 180px;
-
-	
-	
 	background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(36, 100%, 50%), hsl(72, 100%, 50%), hsl(108, 100%, 50%), hsl(144, 100%, 50%), hsl(180, 100%, 50%), hsl(216, 100%, 50%), hsl(252, 100%, 50%), hsl(288, 100%, 50%), hsl(324, 100%, 50%), hsl(360, 100%, 50%))
 }
 

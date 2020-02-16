@@ -20,13 +20,24 @@ router.get('/', (req,res) => {
 
 
 router.get('/home', (req,res) => {
-	if (req.session.loggedin) {
+	if (req.session.username == "admin") {
+			res.sendFile(path.join(__dirname + '/public/home-admin.html'));
+	}
+	else if (req.session.loggedin) {
 		res.sendFile(path.join(__dirname + '/public/home.html'));
-	} else {
+	} 
+	else {
 		res.redirect('/');
 	}
 });
 
+router.get('/manage', (req,res) => {	
+	if (req.session.username == "admin") {
+		res.sendFile(path.join(__dirname + '/public/manage.html'));
+	} else {
+		res.redirect('/');
+	}
+});
 
 router.get('/home-incorrect', (req,res) => {
 	res.sendFile(path.join(__dirname + '/public/login-incorrect.html'));
@@ -55,6 +66,26 @@ router.get('/devices', (req,res) => {
 	}
 });
 
+router.get('/users', (req,res) => {
+	if (req.session.username == "admin") {
+		database.findUsers(results=>{res.json(results)});
+	}
+	else {
+		res.sendFile(path.join(__dirname + '/public/404.html'));
+	}
+});
+
+
+router.get('/user_devices', (req,res) => {
+	if (req.session.username == "admin") {
+		database.findUserDevices(results=>{res.json(results)});
+	}
+	else {
+		res.sendFile(path.join(__dirname + '/public/404.html'));
+	}
+});
+
+
 router.get('/devices/sensors', (req,res) => {
 	if (req.session.loggedin) {
 		database.findSensors(results=>{res.json(results)});
@@ -73,17 +104,37 @@ router.get('/*', (req, res) => {
 router.post('/auth', authController);
 router.post('/contact', mailController);
 
-router.post('/device', (req, res) =>{
-	const device = req.body;
-	if (device.name == "delete") {
-		database.deleteDevice(device.id);
+
+router.post('/device', (req, res) => {
+	if (req.session.username == "admin") {
+		const device = req.body;
+		if (device.name == "delete") {
+			database.deleteDevice(device.id);
+		}
+		else {
+			database.changeDeviceName(device.name, device.id);
+		}
+		res.send("ok");
 	}
-	else {
-		database.changeDeviceName(device.name, device.id);
-	}
-	
-	res.send("ok");
-	
 });
+
+
+router.post('/user_devices/add', (req, res) => {
+	if (req.session.username == "admin") {
+		let user_device = req.body;
+		database.addUserDevice(user_device.user_id , user_device.device_id);
+		res.send("ok");
+	}
+});
+
+router.post('/user_devices/delete', (req, res) => {
+	if (req.session.username == "admin") {
+		let user_device = req.body;
+		database.deleteUserDevice(user_device.user_id , user_device.device_id);
+		res.send("ok");
+	}
+});
+
+
 
 module.exports = router;

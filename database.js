@@ -62,6 +62,17 @@ function showUsers() {
 	});
 }
 
+function findUsers(callback) {
+	connection.query('SELECT * FROM users', (err,rows) =>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			callback(rows);
+		}
+	});
+}
+
 function findUser(username, callback) {
 	connection.query('SELECT * FROM users WHERE user_name = ?', [username], (err,rows) =>{
 		if (err) {
@@ -140,6 +151,7 @@ function addDevice(id) {
 	});
 }
 
+
 function deleteDevice(id) {	//Removes all peripherals from one device
 	id = parseInt(Math.floor(id/10));
 	connection.query('DELETE FROM devices WHERE FLOOR(device_id/10) = ?', [id], err=>{
@@ -163,6 +175,8 @@ function changeDeviceValue(value, id) {
 		}
 	})
 }
+
+
 function changeDeviceName(name, id) {
 	connection.query('UPDATE devices SET device_name = ? WHERE device_id = ?', [name, id], (err,res)=>{
 		if (err) {
@@ -188,60 +202,66 @@ function getDeviceValue(id) {
 }
 
 
-function activateDevice(id) {	//Activates all peripherals from one device
-	id = parseInt(Math.floor(id/10));
-	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [true, id], (err,res)=>{
+function activateModule(code) {	//Activates all devices from one module
+	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [true, code], (err,res)=>{
 		if (err) {
 			console.log(err);
 		}
 		else {
-			console.log(`Changed device: ${id}`);
+			console.log(`Module ${code} activated`);
 		}
 	})
 }
 
-function deactivateDevice(id) { //Deactivates all peripherals from one device
-	id = parseInt(Math.floor(id/10));
-	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [false, id], (err,res)=>{
+
+function deactivateModule(code) { //deactivates all devices from one module
+	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [false, code], (err,res)=>{
 		if (err) {
 			console.log(err);
 		}
 		else {
-			console.log(`Changed device: ${id}`);
-		}
-	})
-}
-
-function addUserDevice(username, device_id) {
-	findUser(username, result => { 
-		if (result.length > 0) {
-			let user_device = {device_id: device_id, user_id: result[0].user_id};
-			connection.query('INSERT INTO user_device SET?', user_device, (err, res) => {
-				if (err){
-					console.log(err)
-				}
-				else{
-					console.log(`Added device ${device_id} to user ${username}`)	
-				}
-			});
+			console.log(`Module ${code} deactivated`);
 		}
 	});
 }
 
-function deleteUserDevice(username, device_id) {
-	findUser(username, result => { 
-		if (result.length > 0) {
-			connection.query('DELETE FROM user_device WHERE device_id = ? AND user_id = ?', [device_id, result[0].user_id], (err, res) => {
-				if (err){
-					console.log(err)
-				}
-				else{
-					console.log(`Removed device ${device_id} from user ${username}`)	
-				}
-			});
+
+function resetModuleValues(code) {
+	connection.query('UPDATE devices SET device_value = ? WHERE FLOOR(device_id/10) = ?', [0, code], (err,res)=>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			console.log(`Module ${code} reset`);
 		}
 	});
 }
+
+
+function addUserDevice(user_id, device_id) {
+	let user_device = {device_id: device_id, user_id: user_id};
+	connection.query('INSERT INTO user_device SET?', user_device, (err, res) => {
+		if (err){
+			console.log(err)
+		}
+		else{
+			console.log(`Added device ${device_id} to user ${user_id}`)	
+		}
+	});
+}
+
+
+function deleteUserDevice(user_id, device_id) {		
+	connection.query('DELETE FROM user_device WHERE device_id = ? AND user_id = ?', [device_id, user_id], (err, res) => {
+		if (err){
+			console.log(err)
+		}
+		else{
+			console.log(`Removed device ${device_id} from user ${user_id}`)	
+		}
+	});
+}
+
 
 function findUserDevice(username) {
 	findUser(username, result => { 
@@ -258,38 +278,56 @@ function findUserDevice(username) {
 	});
 }
 
-findDevices(devices => {
-	console.log(devices);
-})
+function findUserDevices(callback) {
+	connection.query('SELECT * FROM user_device', (err,rows) =>{
+		if (err) {
+			console.log(err);
+		}
+		else {
+			callback(rows);
+		}
+	});
+}
 
 
-showUsers();
 
-//let deviceValue = getDeviceValue(10)
-//deviceValue.then(value => console.log(value), error => console.log(error));
-
-
-//addUser("admin2", "admin");
-//findUserDevice("julita")
+//findDevices(devices => {
+//	console.log(devices);
+//})
 
 
-//deleteDevice(21);
-//deleteAllDevices(2);
+//showUsers();
+//
+//addUserDevice("julita", 10);
+//addUserDevice("julita", 21);
+//addUserDevice("julita", 22);
+//addUserDevice("julita", 33);
+//
+//addUserDevice("andreas", 42);
+//addUserDevice("andreas", 41);
+//addUserDevice("andreas", 33);
 
-
+//deleteDevice(42);
+//deleteDevice(41);
 
 exports.getDeviceValue = getDeviceValue;
-exports.activateDevice = activateDevice;
-exports.deactivateDevice = deactivateDevice;
+
+exports.activateModule = activateModule;
+exports.deactivateModule = deactivateModule;
+exports.resetModuleValues = resetModuleValues;
+
 exports.findDevices = findDevices;
 exports.deleteDevice = deleteDevice;
 exports.deleteUser = deleteUser;
 exports.addUser = addUser;
 exports.addDevice = addDevice;
 exports.findUser = findUser;
+exports.findUsers = findUsers;
 exports.showUsers = showUsers;
 exports.findSensors = findSensors;
 exports.changeDeviceName = changeDeviceName;
 exports.changeDeviceValue = changeDeviceValue;
 
-
+exports.findUserDevices = findUserDevices;
+exports.addUserDevice = addUserDevice;
+exports.deleteUserDevice = deleteUserDevice;

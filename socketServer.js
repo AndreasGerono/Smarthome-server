@@ -6,54 +6,54 @@ const database = require('./database');
 const PAIRING = 9999;
 const MESSAGE_SIZE = 4;
 
-let clients = [];
-let devices = new Map();
+//let clients = [];
+let clients = new Map();
 
 const server = net.createServer(serverFunc);
 
 
 function serverFunc(socket) {
 	socket.setEncoding('utf-8');
-	socket.id = "NEW";
-	clients.push(socket);
+	socket.code = "NEW";
 	socket.write('Connected!\n');
-	console.log(`Client: ${socket.id} connected!`);
+	console.log(`Client: ${socket.code} connected!`);
 //	socket.setTimeout(4000);
 	
 	socket.on('data', data => {
-		console.log(`From: ${socket.id} ${data}`);
+		console.log(`From: ${socket.code} ${data}`);
 		data = encodeMessage(data);
 		console.log(data.id, data.value);
 		if (data.value == PAIRING) {
-			socket.id = data.id;
+			socket.code = getModuleCode(data.id);
+			clients.set(socket.code, socket);
 			database.addDevice(data.id);
-			socket.write(data.id);	//response to device
-			wss.sendToAll('update');
-			devices.set(socket, data.id);	//Devices per socket container
+			socket.write('done');	//response to device
+			setTimeout(() => {
+				database.activateModule(socket.code);	//NEW
+				wss.sendToAll('update');
+			}, 500)
 		}
-		else if (data && socket.id) {
-			database.changeDeviceValue(data.value, socket.id);
+		else if (data.id != 0) {
+			database.changeDeviceValue(data.value, data.id);
 		}
 		
-		database.activateDevice(socket.id);	//NEW
 		wss.sendToAll(JSON.stringify(data));
-		console.log("devices: ", devices.get(socket));
 	});
 	
 	socket.on('close', () => {
-		clients.splice(clients.indexOf(socket), 1);
-		console.log(`Client: ${socket.id} left`);
-		database.deactivateDevice(socket.id);
-		database.changeDeviceValue("0", socket.id);
+		clients.delete(socket.code);
+		console.log(`Client: ${socket.code} left`);
+		database.deactivateModule(socket.code);
+		database.resetModuleValues(socket.code);
 		wss.sendToAll('update');
 	});
 	
 	
 	socket.on('timeout', () => {
-		clients.splice(clients.indexOf(socket), 1);
-		database.deactivateDevice(socket.id);
-		database.changeDeviceValue("0", socket.id);
-		console.log(`Client: ${socket.id} left due  timeout`);
+		clients.delete(socket.code);
+		database.deactivateModule(socket.code);
+		database.resetModuleValues(socket.code);
+		console.log(`Client: ${socket.code} left due  timeout`);
 		console.log(clients);
 		wss.sendToAll('update');
 	});
@@ -74,28 +74,41 @@ exports.listen = (PORT, IP) => {
 	server.listen(PORT,IP);
 }
 
+//exports.sendToDevice = (id, message) => {
+//	console.log(id, message);
+//	clients.forEach(client => {
+//		if (Math.floor(client.id/10) == Math.floor(id/10)) {
+//			try{
+//				client.write(decodeMessage(id, message)); 
+//			}
+//			catch(err){}
+//		}
+//	});
+//	console.log(message);
+//}
+
 exports.sendToDevice = (id, message) => {
 	console.log(id, message);
-	message = decodeMessage(message);
-	clients.forEach(client => {
-		if (client.id == id) {
-			try{
-				setTimeout(() => client.write(message), 200);	//może coś psuć? eksperymentalnie dobrać opóźnienie
-			}
-			catch(err){
-				
-			}
-		}
-	});
-	console.log(message);
+	client = clients.get(getModuleCode(id));
+	if (client) {
+		client.write(decodeMessage(id, message));
+	}
 }
 
+function getDeviceType(id) {
+	return parseInt(id%10);
+}
+function getModuleCode(id) {
+	return Math.floor(id/10);
+}
 
-function decodeMessage(message){
+function decodeMessage(id, message){
+	id = parseInt(id%10);
 	while (message.length < MESSAGE_SIZE) {
 		message = '0' + message;
 	}
 	message = '$' + message;	
+	message = String(id)+message;
 	return message;
 }
 
@@ -107,3 +120,6 @@ function encodeMessage(message) {
 	let value = message%10000;
 	return {id: id.toString(), value: value.toString()}
 }
+
+
+
