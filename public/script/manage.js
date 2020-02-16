@@ -12,7 +12,7 @@ function createTable() {
 		request.send();
 		request.onload = () => {
 			const users = JSON.parse(request.response);
-			request.open('GET', '/user_devices');
+			request.open('GET', '/users_devices');
 			request.send();
 			request.onload = () => {
 			const userDevices = JSON.parse(request.response);

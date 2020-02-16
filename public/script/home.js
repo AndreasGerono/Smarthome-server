@@ -71,7 +71,6 @@ function updateDevices() {
 					createSlider(element);
 				}
 				
-				
 				else if (element.device_id%10 === 2) {
 					createRgbSlider(element);
 				}
@@ -89,22 +88,21 @@ function updateDevices() {
 }
 
 function updateSensors() {
-	if (editButton.textContent === 'edit') {
-		const request = new XMLHttpRequest();
-		request.open('GET', '/devices/sensors');
-		request.send();
-		request.onload = () => {
-			try{
-				removeSensors();
-				const data = JSON.parse(request.response);
-				data.forEach(sensor => {
-				createSensor(sensor);
-				});
-			}
-			catch(err){
-				console.log('Unable to download sensors!', err);
-				location.reload();
-			}
+	const request = new XMLHttpRequest();
+	request.open('GET', '/devices/sensors');
+	request.send();
+	request.onload = () => {
+		try{
+			removeSensors();
+			const data = JSON.parse(request.response);
+			console.log(data);
+			data.forEach(sensor => {
+			createSensor(sensor);
+			});
+		}
+		catch(err){
+			console.log('Unable to download sensors!', err);
+			location.reload();
 		}
 	}
 }

@@ -58,8 +58,11 @@ router.get('/logout', (req,res) => {
 
 
 router.get('/devices', (req,res) => {
-	if (req.session.loggedin) {
+	if (req.session.username == "admin") {
 		database.findDevices(results=>{res.json(results)});
+	}
+	else if (req.session.loggedin) {
+		database.findUserDevices(req.session.username, results=>{res.json(results)});
 	}
 	else {
 		res.sendFile(path.join(__dirname + '/public/404.html'));
@@ -68,7 +71,7 @@ router.get('/devices', (req,res) => {
 
 router.get('/users', (req,res) => {
 	if (req.session.username == "admin") {
-		database.findUsers(results=>{res.json(results)});
+		database.findUsers(results=>{res.json(sortUsers(results))});	
 	}
 	else {
 		res.sendFile(path.join(__dirname + '/public/404.html'));
@@ -76,19 +79,25 @@ router.get('/users', (req,res) => {
 });
 
 
-router.get('/user_devices', (req,res) => {
+router.get('/users_devices', (req,res) => {
 	if (req.session.username == "admin") {
-		database.findUserDevices(results=>{res.json(results)});
+		database.usersDevices(results=>{res.json(results)});
 	}
+	
 	else {
 		res.sendFile(path.join(__dirname + '/public/404.html'));
 	}
+	
+	
 });
 
 
 router.get('/devices/sensors', (req,res) => {
-	if (req.session.loggedin) {
+	if (req.session.username == "admin") {
 		database.findSensors(results=>{res.json(results)});
+	}
+	else if (req.session.loggedin) {
+		database.findUserSensors(req.session.username, results=>{res.json(results)});
 	}
 	else {
 		res.sendFile(path.join(__dirname + '/public/404.html'));
@@ -138,3 +147,17 @@ router.post('/user_devices/delete', (req, res) => {
 
 
 module.exports = router;
+
+
+
+function sortUsers(users) {
+	let result = users.filter(user => user.user_name != "admin");
+	let newArray = [];
+	
+	for (element of result) {
+		let userData = {user_id: element.user_id, user_name: element.user_name};
+		newArray.push(userData);
+	}
+	
+	return newArray;
+}

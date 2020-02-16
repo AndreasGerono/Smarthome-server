@@ -263,7 +263,7 @@ function deleteUserDevice(user_id, device_id) {
 }
 
 
-function findUserDevice(username) {
+function findUserDevices(username, callback) {
 	findUser(username, result => { 
 		if (result.length > 0) {
 			connection.query('select * from devices d inner join user_device uc on d.device_id = uc.device_id Where user_id = ?', [result[0].user_id], (err, rows) => {
@@ -271,14 +271,36 @@ function findUserDevice(username) {
 					console.log(err)
 				}
 				else{
-					console.log(`${username} devices:`, rows)	
+					callback(rows)	
 				}
 			});
 		}
 	});
 }
 
-function findUserDevices(callback) {
+function findUserSensors(username, callback) {
+	findUser(username, result => { 
+		if (result.length > 0) {
+			connection.query('select * from devices d inner join user_device uc on d.device_id = uc.device_id Where user_id = ?', [result[0].user_id], (err, rows) => {
+				if (err){
+					console.log(err)
+				}
+				else{
+					
+					let sensors = [];
+					for (row of rows) {
+						if (row.device_id%10 > 2){
+							sensors.push(row);
+						}
+					}
+					callback(sensors);
+				}
+			});
+		}
+	});
+}
+
+function usersDevices(callback) {
 	connection.query('SELECT * FROM user_device', (err,rows) =>{
 		if (err) {
 			console.log(err);
@@ -291,24 +313,15 @@ function findUserDevices(callback) {
 
 
 
-//findDevices(devices => {
-//	console.log(devices);
-//})
+findDevices(devices => {
+	console.log(devices);
+});
 
 
-//showUsers();
-//
-//addUserDevice("julita", 10);
-//addUserDevice("julita", 21);
-//addUserDevice("julita", 22);
-//addUserDevice("julita", 33);
-//
-//addUserDevice("andreas", 42);
-//addUserDevice("andreas", 41);
-//addUserDevice("andreas", 33);
+showUsers();
 
-//deleteDevice(42);
-//deleteDevice(41);
+//changeDeviceValue(19, 33);
+
 
 exports.getDeviceValue = getDeviceValue;
 
@@ -328,6 +341,8 @@ exports.findSensors = findSensors;
 exports.changeDeviceName = changeDeviceName;
 exports.changeDeviceValue = changeDeviceValue;
 
-exports.findUserDevices = findUserDevices;
+exports.usersDevices = usersDevices;
 exports.addUserDevice = addUserDevice;
 exports.deleteUserDevice = deleteUserDevice;
+exports.findUserDevices = findUserDevices;
+exports.findUserSensors = findUserSensors;

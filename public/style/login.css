@@ -29,31 +29,28 @@
 	border-color: black;
 	border: 1px solid #dddddd;
 	cursor: pointer;
-	font-weight: normal;
 	color: black;
 }
 
 
+/*.login-form a {*/
+/*/*	width: 200px;*/*/
+/*/*	margin-left: 30%;*/*/
+/*/*	margin-right: 30%;*/*/
+/*	padding: 10px;*/
+/*	background-color: white;*/
+/*	border-radius: 20px;*/
+/*	border-color: black;*/
+/*	border: 1px solid #dddddd;*/
+/*	cursor: pointer;*/
+/*	text-decoration: none;*/
+/*	color: black;*/
+/*	font-size: 10px;*/
+/*}*/
 
-.login-form a {
-	font-size: 15;
-/*	width: 40%;*/
-/*	margin-left: 30%;*/
-/*	margin-right: 30%;*/
-	padding: 10px;
-	background-color: white;
-	border-radius: 20px;
-	border-color: black;
-	border: 1px solid #dddddd;
-	cursor: pointer;
-	text-decoration: none;
-	font-weight: normal;
-	color: black;
-}
-
-.login-form a:hover {
-	border: 1px solid #da472d;
-}
+/*.login-form a:hover {*/
+/*	border: 1px solid #da472d;*/
+/*}*/
 
 
 .login-form input[type="submit"]:hover {
