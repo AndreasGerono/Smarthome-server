@@ -320,8 +320,7 @@ findDevices(devices => {
 
 showUsers();
 
-//changeDeviceValue(19, 33);
-
+//deactivateModule(62)
 
 exports.getDeviceValue = getDeviceValue;
 

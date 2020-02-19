@@ -44,6 +44,7 @@ function drawTable(users, devices, userDevices) {
 		let cell = row.insertCell();
 		let text = document.createTextNode(device.device_name);
 		cell.id = device.device_id;
+		cell.onclick = editElement;
 		cell.appendChild(text);
 	});
 	
@@ -109,4 +110,32 @@ function deleteUserDeviceRequest(userDevice) {
 	request.open('POST', '/user_devices/delete');
 	request.setRequestHeader('Content-Type', 'application/json');
 	request.send(userDevice);
+}
+
+function devicesCellOnClick() {
+	console.log(this.innerText);
+}
+
+
+function editElement(){
+	const request = new XMLHttpRequest();
+	const name = window.prompt('New name:', this.textContent);
+	if (validateName(name)) {
+		request.open('POST', '/device');
+		request.setRequestHeader('Content-Type', 'application/json');
+		this.innerText = name;
+		let data = JSON.stringify({device_id: this.id, device_name: this.innerText});
+		request.send(data);
+		console.log(data)
+	}
+	else if (name != null){
+		window.alert('Wrong name!');
+	}
+}
+
+function validateName(name) {
+	if (name) {
+		return name.charAt(0) !== ' ' && name != '' && name != 'null' && name.length < 20;
+	}
+	return 0;
 }

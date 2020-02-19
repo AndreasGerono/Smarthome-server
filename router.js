@@ -116,12 +116,13 @@ router.post('/contact', mailController);
 
 router.post('/device', (req, res) => {
 	if (req.session.username == "admin") {
-		const device = req.body;
-		if (device.name == "delete") {
-			database.deleteDevice(device.id);
+		const data = req.body;
+		console.log(data);
+		if (data.device_name == "delete") {
+			database.deleteDevice(data.device_id);
 		}
 		else {
-			database.changeDeviceName(device.name, device.id);
+			database.changeDeviceName(data.device_name, data.device_id);
 		}
 		res.send("ok");
 	}

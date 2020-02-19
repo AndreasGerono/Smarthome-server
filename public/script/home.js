@@ -3,9 +3,9 @@ const editButton = document.querySelector('.edit');
 const colorEnable = 'rgb(255, 90, 82)';
 const colorDisable = 'rgb(221, 221, 221)';
 
+var currentColor = 0;
 
 console.log(location.hostname)
-editButton.onclick = toogleEdit;
 setInterval(()=>{updateSensors()}, 2000);
 updateDevices();
 
@@ -30,6 +30,7 @@ function toogleEdit() {
 	}
 }
 
+
 function formatData(id,value,name=undefined) {
 	return JSON.stringify({'id': id, 'value':value, 'name' : name});
 }
@@ -38,6 +39,11 @@ function formatData(id,value,name=undefined) {
 let IP = location.hostname;
 const WS_PORT = 8080;
 var socket = new WebSocket('ws://'+IP+':'+WS_PORT);
+
+
+window.onbeforeunload = () => {
+	socket.close();
+}
 
 socket.onopen = event => {
 	
@@ -50,7 +56,7 @@ socket.onopen = event => {
 	
 	socket.onclose = message => {
 		console.log('Server closed on code:', message.code);
-		setTimeout(() => { location.reload() }, 150);
+		setTimeout(() => {location.reload()}, 200);
 	};
 };
 
@@ -70,9 +76,8 @@ function updateDevices() {
 				else if (element.device_id%10 === 1) {
 					createSlider(element);
 				}
-				
 				else if (element.device_id%10 === 2) {
-					createRgbSlider(element);
+					createRgb(element);
 				}
 				
 				else if (element.device_id%10 > 2) {
@@ -95,7 +100,6 @@ function updateSensors() {
 		try{
 			removeSensors();
 			const data = JSON.parse(request.response);
-			console.log(data);
 			data.forEach(sensor => {
 			createSensor(sensor);
 			});
@@ -117,9 +121,7 @@ function createSensor(element){
 	else{
 		div.className = 'sensor enabled';
 	}
-	console.log(element.device_is_active);
 	namePara.textContent = element.device_name;
-	namePara.onclick = editElement;
 	value = parseFloat(element.device_value).toFixed(1)
 	valuePara.textContent = value + getUnit(element.device_id);
 	valuePara.id = element.device_id;
@@ -144,7 +146,6 @@ function createSwitch(element) {
 	button.textContent = parseInt(element.device_value) ? 'ON' : 'OFF';
 	button.id = element.device_id;
 	button.onclick = switchClick;
-	para.onclick = editElement;
 	div.appendChild(para);
 	div.appendChild(button);
 	containers[0].appendChild(div);
@@ -164,7 +165,7 @@ function createSlider(element) {
 		div.className = 'brightness enabled';
 	}
 	slider.setAttribute('type', 'range');
-	slider.setAttribute('max', '255');
+	slider.setAttribute('max', '99');
 	slider.setAttribute('step', '1');
 	slider.id = element.device_id;
 	slider.value = element.device_value%1000;
@@ -174,37 +175,56 @@ function createSlider(element) {
 	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
 	}
-	para.onclick = editElement;
 	div.appendChild(para);
 	div.appendChild(slider);
 	containers[1].appendChild(div);
 }
 
-
-
-function createRgbSlider(element) {
+function createRgb(element) {
 	let slider = document.createElement('input');
 	let div = document.createElement('div');
 	let para = document.createElement('p');
+	para.textContent = element.device_name;
+	
 	if (element.device_is_active == 0) {
-		div.className = 'rgb disabled';
+		div.className = 'brightness disabled';
 		slider.disabled = true;
 	}
 	else {
-		div.className = 'rgb enabled';
+		div.className = 'brightness enabled';
 	}
 	slider.setAttribute('type', 'range');
-	slider.setAttribute('max', '340');
-	slider.setAttribute('step', '2');
+	slider.setAttribute('max', '99');
+	slider.setAttribute('step', '1');
 	slider.id = element.device_id;
-	slider.className = 'rgb';
-	slider.value = element.device_value;
+	slider.value = element.device_value%100;
 	slider.oninput = sliderRgbDrag;
+	slider.onclick = sliderRgbClick;
+	slider.onmouseup = sliderRgbMouseUp;
+	if (element.device_value >= 1000) {
+		slider.style.background = colorEnable;
+	}
 	div.appendChild(para);
 	div.appendChild(slider);
+	
+	let rgb_div = document.createElement('div');
+	rgb_div.className = "colors";
+	rgb_div.appendChild(createColorButton(0));
+	rgb_div.appendChild(createColorButton(1));
+	rgb_div.appendChild(createColorButton(2));
+	rgb_div.appendChild(createColorButton(3));
+	div.appendChild(rgb_div);
 	containers[1].appendChild(div);
 }
 
+
+function createColorButton(color) {
+	let button = document.createElement('button');
+	button.className = "rgbButton";
+	button.value = color;
+	button.onclick = colorButtonOnClick;
+	return button;
+}
 
 function switchClick() {
 	
@@ -241,15 +261,7 @@ function sliderClick() {
 
 function sliderMouseUp() {
 	setTimeout(()=>this.onclick = sliderClick, 100);
-	
 }
-
-
-function sliderRgbMouseUp() {
-	this.setAttribute("style", "background: linear-gradient(to right, hsl(0, 100%, 50%), hsl(36, 100%, 50%), hsl(72, 100%, 50%), hsl(108, 100%, 50%), hsl(144, 100%, 50%), hsl(180, 100%, 50%), hsl(216, 100%, 50%), hsl(252, 100%, 50%), hsl(288, 100%, 50%), hsl(324, 100%, 50%), hsl(360, 100%, 50%))");	
-}
-
-
 
 
 function sliderDrag() {
@@ -266,59 +278,74 @@ function sliderDrag() {
 	
 }
 
-function sliderRgbDrag() {	
-	socket.send(formatData(this.id, this.value));
-	console.log(formatData(this.id, this.value));
-}
+//RGB
 
-
-function editElement(e){
-	if (editButton.textContent !== 'edit') {
-		const request = new XMLHttpRequest();
-		const name = window.prompt('New name:', this.textContent);
-		if (validateName(name)) {
-			request.open('POST', '/device');
-			request.setRequestHeader('Content-Type', 'application/json');
-			let data = formatData(this.parentElement.children[1].id, undefined, name);
-			request.send(data);
-			updateSensors();
-			updateDevices();
-		}
-		else if (name != null){
-			window.alert('Wrong name!');
-		}
+function sliderRgbClick() {
+	let value = currentColor*100 + parseInt(this.value);
+	if (this.style.background === colorEnable) {
+		this.style.background = colorDisable;
 	}
+	
+	else {
+		this.style.background = colorEnable;
+		value += 1000;
+	}
+	
+	value = value.toString();
+	socket.send(formatData(this.id, value));
+	console.log(formatData(this.id, value));
 }
 
-function validateName(name) {
-	if (name) {
-		return name.charAt(0) !== ' ' && name != '' && name != 'null' && name.length < 20;
-	}
-	return 0;
+function sliderRgbMouseUp() {
+	setTimeout(()=>this.onclick = sliderRgbClick, 100);	
 }
 
-function disableAll() {
-	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
-	try{
-		elements.forEach(element => {
-		element.children[1].disabled = true;
-		console.log(element);
-		});
+function sliderRgbDrag() {
+	this.onclick = null;
+	let value = currentColor*100 + parseInt(this.value);
+		
+	if (this.style.background === colorEnable) {
+		value += 1000;
 	}
-	catch(error){};
+	
+	value = value.toString();
+	socket.send(formatData(this.id, value));
+	console.log(formatData(this.id, value));
 }
 
-function enableAll() {
-	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
-	try{
-		elements.forEach(element => {
-		element.children[1].disabled = false;
-//		element.classList.remove("disabled");
-//		element.classList.add("enabled");
-		});
-	}
-	catch(error){};
+
+function colorButtonOnClick() {
+	currentColor = this.value;
+	let sliderVal =  this.parentNode.parentNode.children[1].value;
+	let value = 1000 + parseInt(this.value)*100 + parseInt(sliderVal);
+	this.parentNode.parentNode.children[1].style.background = colorEnable;
+	let id = this.parentNode.parentNode.children[1].id;
+	socket.send(formatData(id, value));
+	console.log(formatData(id, value));
 }
+
+//function disableAll() {
+//	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
+//	try{
+//		elements.forEach(element => {
+//		element.children[1].disabled = true;
+//		console.log(element);
+//		});
+//	}
+//	catch(error){};
+//}
+//
+//function enableAll() {
+//	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
+//	try{
+//		elements.forEach(element => {
+//		element.children[1].disabled = false;
+////		element.classList.remove("disabled");
+////		element.classList.add("enabled");
+//		});
+//	}
+//	catch(error){};
+//}
 
 function removeDevices() {
 	let elements = document.querySelectorAll('.switch, .slider, .sensor, .rgb, .brightness');
