@@ -12,11 +12,13 @@ function createTable() {
 		request.send();
 		request.onload = () => {
 			const users = JSON.parse(request.response);
-			request.open('GET', '/users_devices');
+			request.open('GET', '/users/devices');
 			request.send();
 			request.onload = () => {
 			const userDevices = JSON.parse(request.response);
+			eraseTable();
 			drawTable(users, devices, userDevices);
+			
 			}
 		}		
 	}
@@ -35,6 +37,7 @@ function drawTable(users, devices, userDevices) {
 		let cell = usersRow.insertCell();
 		let text = document.createTextNode(user.user_name);
 		cell.id = user.user_id;
+		cell.onclick = deleteUser;
 		cell.appendChild(text);
 	});
 	
@@ -44,7 +47,7 @@ function drawTable(users, devices, userDevices) {
 		let cell = row.insertCell();
 		let text = document.createTextNode(device.device_name);
 		cell.id = device.device_id;
-		cell.onclick = editElement;
+		cell.onclick = editDevice;
 		cell.appendChild(text);
 	});
 	
@@ -61,8 +64,7 @@ function drawTable(users, devices, userDevices) {
 			let device_id = row.cells[0].id;
 			let user_id = table.rows[0].cells[step].id;		
 			let cell = row.insertCell();
-	
-	
+			cell.id = user_id;
 			let checked = checkIfUserDevice(user_id, device_id, userDevices);
 			let checkBox = createCheckBox(checked, user_id, device_id);
 			cell.appendChild(checkBox);
@@ -100,14 +102,14 @@ function createCheckBox(checked, user, device) {
 
 function addUserDeviceRequest(userDevice) {
 	const request = new XMLHttpRequest();
-	request.open('POST', '/user_devices/add');
+	request.open('POST', '/user/devices');
 	request.setRequestHeader('Content-Type', 'application/json');
 	request.send(userDevice);
 }
 
 function deleteUserDeviceRequest(userDevice) {
 	const request = new XMLHttpRequest();
-	request.open('POST', '/user_devices/delete');
+	request.open('DELETE', '/user/devices/');
 	request.setRequestHeader('Content-Type', 'application/json');
 	request.send(userDevice);
 }
@@ -117,16 +119,26 @@ function devicesCellOnClick() {
 }
 
 
-function editElement(){
+function editDevice(){
 	const request = new XMLHttpRequest();
 	const name = window.prompt('New name:', this.textContent);
-	if (validateName(name)) {
-		request.open('POST', '/device');
+	const name_lower = name.toLowerCase();
+	
+	if (name_lower === "delete") {
+		request.open('DELETE', '/devices');
+		request.setRequestHeader('Content-Type', 'application/json');
+		let data = JSON.stringify({device_id: this.id});
+		request.send(data);
+		eraseRow(this.parentElement);
+	}
+	
+	else if (validateName(name)) {
+		request.open('POST', '/devices/names');
 		request.setRequestHeader('Content-Type', 'application/json');
 		this.innerText = name;
 		let data = JSON.stringify({device_id: this.id, device_name: this.innerText});
 		request.send(data);
-		console.log(data)
+		console.log(data);
 	}
 	else if (name != null){
 		window.alert('Wrong name!');
@@ -138,4 +150,38 @@ function validateName(name) {
 		return name.charAt(0) !== ' ' && name != '' && name != 'null' && name.length < 20;
 	}
 	return 0;
+}
+
+function deleteUser(){
+	const request = new XMLHttpRequest();
+	let status = window.confirm(`Are you sure you want to delete user ${this.innerText}?`);
+	if (status == true) {
+		request.open('DELETE', '/users');
+		request.setRequestHeader('Content-Type', 'application/json');
+		let data = JSON.stringify({user_id: this.id});
+		request.send(data);
+		console.log(data);
+		createTable();
+
+	}
+}
+
+
+function eraseTable() {
+	try {
+		
+		while (table.firstChild.firstChild) {
+			table.firstChild.removeChild(table.firstChild.firstChild);
+		}
+		
+	}
+	
+	catch(error){
+		console.log("Table is empty!");
+	}
+}
+
+
+function eraseRow(row) {
+	row.parentElement.removeChild(row);
 }

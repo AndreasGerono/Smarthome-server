@@ -17,12 +17,12 @@ module.exports = (req,res) => {
         console.log(username+' logged in!')
       }
       else {
-        res.redirect('/home-incorrect');
+        res.redirect('/home/incorrect');
         res.end();
       }
     }
     else {
-      res.redirect('/home-incorrect');
+      res.redirect('/home/incorrect');
       res.end();
     }
   });

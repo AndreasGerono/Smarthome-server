@@ -1,0 +1,58 @@
+.login-form {
+	width: 300px;
+	margin: auto;
+	font-family: Tahoma, Geneva, sans-serif;
+}
+.login-form h1 {
+	font-weight: normal;
+	text-align: center;
+	color: black;
+	font-size: 24px;
+	padding: 20px 0 0 0;
+}
+.login-form input{
+	-webkit-appearance: none;  
+	width: 100%;
+	padding: 15px;
+	border: 1px solid #dddddd;
+	margin-bottom: 15px;
+	box-sizing:border-box;
+}
+.login-form input[type="submit"] {
+	-webkit-appearance: none;  
+	width: 40%;
+	margin-left: 30%;
+	margin-right: 30%;
+	padding: 10px;
+	background-color: white;
+	border-radius: 20px;
+	border-color: black;
+	border: 1px solid #dddddd;
+	cursor: pointer;
+	color: black;
+}
+
+
+/*.login-form a {*/
+/*/*	width: 200px;*/*/
+/*/*	margin-left: 30%;*/*/
+/*/*	margin-right: 30%;*/*/
+/*	padding: 10px;*/
+/*	background-color: white;*/
+/*	border-radius: 20px;*/
+/*	border-color: black;*/
+/*	border: 1px solid #dddddd;*/
+/*	cursor: pointer;*/
+/*	text-decoration: none;*/
+/*	color: black;*/
+/*	font-size: 10px;*/
+/*}*/
+
+/*.login-form a:hover {*/
+/*	border: 1px solid #da472d;*/
+/*}*/
+
+
+.login-form input[type="submit"]:hover {
+	border: 1px solid #da472d;
+}

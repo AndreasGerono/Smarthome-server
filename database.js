@@ -19,22 +19,17 @@ connection.connect(err => {
 });
 
 function addUser(username, password) {
-	findUser(username, result => {
-		if (result.length > 0){
-			console.log("User already exist!")
-			return 0;
+	const hashPassword = passwordHash.generate(password);
+	const user = {user_name: username, user_password: hashPassword};
+	connection.query('INSERT INTO users SET ?', user, function (err,res) {
+		if (err) {
+			console.log(err);
 		}
-		const hashPassword = passwordHash.generate(password);
-		const user = {user_name: username, user_password: hashPassword};
-		connection.query('INSERT INTO users SET ?', user, function (err,res) {
-			if (err) {
-				console.log(err);
-				return 0;
-			}
-		console.log(`Added  ${username} to users`);
-		return 1;
-		});
-	})
+		else {
+			console.log(`Added  ${username} to users`);
+			return true;
+		}
+	});
 }
 
 

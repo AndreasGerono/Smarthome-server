@@ -19,9 +19,19 @@ router.get('/', (req,res) => {
 });
 
 
+router.get('/signup', (req,res) => {
+	if (req.session.loggedin) {
+		res.redirect('/');
+	}
+	else{
+		res.sendFile(path.join(__dirname + '/public/signup.html'));
+	}
+});
+
+
 router.get('/home', (req,res) => {
 	if (req.session.username == "admin") {
-			res.sendFile(path.join(__dirname + '/public/home-admin.html'));
+		res.sendFile(path.join(__dirname + '/public/home-admin.html'));
 	}
 	else if (req.session.loggedin) {
 		res.sendFile(path.join(__dirname + '/public/home.html'));
@@ -39,7 +49,7 @@ router.get('/manage', (req,res) => {
 	}
 });
 
-router.get('/home-incorrect', (req,res) => {
+router.get('/home/incorrect', (req,res) => {
 	res.sendFile(path.join(__dirname + '/public/login-incorrect.html'));
 });
 
@@ -79,7 +89,7 @@ router.get('/users', (req,res) => {
 });
 
 
-router.get('/users_devices', (req,res) => {
+router.get('/users/devices', (req,res) => {
 	if (req.session.username == "admin") {
 		database.usersDevices(results=>{res.json(results)});
 	}
@@ -114,22 +124,26 @@ router.post('/auth', authController);
 router.post('/contact', mailController);
 
 
-router.post('/device', (req, res) => {
+router.post('/devices/names', (req, res) => {
 	if (req.session.username == "admin") {
 		const data = req.body;
 		console.log(data);
-		if (data.device_name == "delete") {
-			database.deleteDevice(data.device_id);
-		}
-		else {
-			database.changeDeviceName(data.device_name, data.device_id);
-		}
+		database.changeDeviceName(data.device_name, data.device_id);
+		res.send("ok");
+	}
+});
+
+router.delete('/devices', (req, res) => {
+	if (req.session.username == "admin") {
+		const data = req.body;
+		console.log(data);
+		database.deleteDevice(data.device_id);
 		res.send("ok");
 	}
 });
 
 
-router.post('/user_devices/add', (req, res) => {
+router.post('/user/devices', (req, res) => {
 	if (req.session.username == "admin") {
 		let user_device = req.body;
 		database.addUserDevice(user_device.user_id , user_device.device_id);
@@ -137,7 +151,7 @@ router.post('/user_devices/add', (req, res) => {
 	}
 });
 
-router.post('/user_devices/delete', (req, res) => {
+router.delete('/user/devices', (req, res) => {
 	if (req.session.username == "admin") {
 		let user_device = req.body;
 		database.deleteUserDevice(user_device.user_id , user_device.device_id);
@@ -146,8 +160,33 @@ router.post('/user_devices/delete', (req, res) => {
 });
 
 
+router.post('/users', (req, res) => {
+	let user = req.body;
+	console.log(user);
+	database.findUser(user.user_name, result => {
+		if (result.length > 0) {
+			res.send("false");
+		}
+		else {
+			database.addUser(user.user_name, user.user_password);
+			req.session.loggedin = true;
+			req.session.username = user.user_name;
+			res.send("true");
+		}
+	});	
+});
 
-module.exports = router;
+
+router.delete('/users', (req, res) => {
+	if (req.session.username == "admin") {
+		let user = req.body;
+		database.deleteUser(user.user_id);
+		res.send("ok");
+	}
+});
+
+
+
 
 
 
@@ -162,3 +201,8 @@ function sortUsers(users) {
 	
 	return newArray;
 }
+
+
+
+
+module.exports = router;
