@@ -122,7 +122,7 @@ function devicesCellOnClick() {
 function editDevice(){
 	const request = new XMLHttpRequest();
 	const name = window.prompt('New name:', this.textContent);
-	const name_lower = name.toLowerCase();
+	const name_lower = name.toLowerCase().trim();
 	
 	if (name_lower === "delete") {
 		request.open('DELETE', '/devices');

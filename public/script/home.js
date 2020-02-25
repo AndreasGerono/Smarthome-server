@@ -3,7 +3,6 @@ const editButton = document.querySelector('.edit');
 const colorEnable = 'rgb(255, 90, 82)';
 const colorDisable = 'rgb(221, 221, 221)';
 
-var currentColor = 0;
 
 console.log(location.hostname)
 setInterval(()=>{updateSensors()}, 2000);
@@ -122,7 +121,7 @@ function createSensor(element){
 		div.className = 'sensor enabled';
 	}
 	namePara.textContent = element.device_name;
-	value = parseFloat(element.device_value).toFixed(1)
+	value = parseFloat(element.device_value).toFixed(1);
 	valuePara.textContent = value + getUnit(element.device_id);
 	valuePara.id = element.device_id;
 	div.appendChild(namePara);
@@ -214,6 +213,7 @@ function createRgb(element) {
 	rgb_div.appendChild(createColorButton(2));
 	rgb_div.appendChild(createColorButton(3));
 	div.appendChild(rgb_div);
+	div.currentColor = 0;
 	containers[1].appendChild(div);
 }
 
@@ -281,7 +281,8 @@ function sliderDrag() {
 //RGB
 
 function sliderRgbClick() {
-	let value = currentColor*100 + parseInt(this.value);
+	let currentColor = this.parentElement.currentColor;
+	let value = (currentColor*100 + parseInt(this.value));
 	if (this.style.background === colorEnable) {
 		this.style.background = colorDisable;
 	}
@@ -302,6 +303,7 @@ function sliderRgbMouseUp() {
 
 function sliderRgbDrag() {
 	this.onclick = null;
+	let currentColor = this.parentElement.currentColor;
 	let value = currentColor*100 + parseInt(this.value);
 		
 	if (this.style.background === colorEnable) {
@@ -315,7 +317,7 @@ function sliderRgbDrag() {
 
 
 function colorButtonOnClick() {
-	currentColor = this.value;
+	this.parentElement.parentElement.currentColor = this.value;
 	let sliderVal =  this.parentNode.parentNode.children[1].value;
 	let value = 1000 + parseInt(this.value)*100 + parseInt(sliderVal);
 	this.parentNode.parentNode.children[1].style.background = colorEnable;

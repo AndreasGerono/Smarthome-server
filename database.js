@@ -313,10 +313,6 @@ findDevices(devices => {
 });
 
 
-showUsers();
-
-//deactivateModule(62)
-
 exports.getDeviceValue = getDeviceValue;
 
 exports.activateModule = activateModule;

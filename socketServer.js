@@ -15,7 +15,7 @@ const server = net.createServer(serverFunc);
 function serverFunc(socket) {
 	socket.setEncoding('utf-8');
 	socket.code = "NEW";
-	socket.write('Connected!\n');
+	socket.write('Connected\r\n');
 	console.log(`Client: ${socket.code} connected!`);
 //	socket.setTimeout(4000);
 	
@@ -27,7 +27,6 @@ function serverFunc(socket) {
 			socket.code = getModuleCode(data.id);
 			clients.set(socket.code, socket);
 			database.addDevice(data.id);
-			socket.write('done');	//response to device
 			setTimeout(() => {
 				database.activateModule(socket.code);	//NEW
 				wss.sendToAll('update');
@@ -103,12 +102,10 @@ function getModuleCode(id) {
 }
 
 function decodeMessage(id, message){
-	id = parseInt(id%10);
 	while (message.length < MESSAGE_SIZE) {
 		message = '0' + message;
 	}
-	message = '$' + message;	
-	message = String(id)+message;
+	message = '$' + message+"\r\n";
 	return message;
 }
 
