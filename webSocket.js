@@ -34,6 +34,13 @@ wss.terminateOthers = ws =>{
 	});
 }
 
+wss.terminateUser = user =>{
+	wss.clients.forEach(client => {
+		client.terminate();
+	});
+}
+
+
 wss.sendToOthers = (message, ws) => {
 	wss.clients.forEach(client =>{
 		if (ws !== client){
@@ -42,7 +49,17 @@ wss.sendToOthers = (message, ws) => {
 	});	
 }
 
+wss.sendToOwners = (device, message) => {
+	wss.clients.forEach(client =>{
+		client.send(message);
+	});	
+}
 
+wss.sendToUser = (user, message) => {
+	wss.clients.forEach(client =>{
+		client.send(message);
+	});	
+}
 
 wss.setClientId = (ws, req) =>{
 	ws.id = req.headers.cookie;

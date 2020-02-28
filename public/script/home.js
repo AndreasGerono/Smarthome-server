@@ -45,7 +45,6 @@ window.onbeforeunload = () => {
 }
 
 socket.onopen = event => {
-	
 	socket.onmessage = message => {
 		console.log(message.data);
 		if (message.data == 'update') {

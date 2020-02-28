@@ -198,7 +198,7 @@ function getDeviceValue(id) {
 
 
 function activateModule(code) {	//Activates all devices from one module
-	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [true, code], (err,res)=>{
+	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id) = ?', [true, code], (err,res)=>{
 		if (err) {
 			console.log(err);
 		}
@@ -210,7 +210,7 @@ function activateModule(code) {	//Activates all devices from one module
 
 
 function deactivateModule(code) { //deactivates all devices from one module
-	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id/10) = ?', [false, code], (err,res)=>{
+	connection.query('UPDATE devices SET device_is_active = ? WHERE FLOOR(device_id) = ?', [false, code], (err,res)=>{
 		if (err) {
 			console.log(err);
 		}
@@ -222,7 +222,7 @@ function deactivateModule(code) { //deactivates all devices from one module
 
 
 function resetModuleValues(code) {
-	connection.query('UPDATE devices SET device_value = ? WHERE FLOOR(device_id/10) = ?', [0, code], (err,res)=>{
+	connection.query('UPDATE devices SET device_value = ? WHERE FLOOR(device_id) = ?', [0, code], (err,res)=>{
 		if (err) {
 			console.log(err);
 		}

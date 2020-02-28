@@ -3,7 +3,11 @@ const path = require('path');
 const ip = require('ip');
 const router = express.Router();
 
+const usersMap = require('./usersMap');
 const database = require('./database');
+const wss = require('./webSocket');
+
+
 
 const authController = require('./controllers/authController');  
 const mailController = require('./controllers/mailController');  
@@ -60,7 +64,9 @@ router.get('/contact', (req,res) => {
 
 router.get('/logout', (req,res) => {
 	if (req.session.loggedin) {
-		console.log(req.session.username+' logged out!')
+		console.log(req.session.username+' logged out!');
+		console.log(req.headers.cookie);
+		usersMap.removeUser(req.headers.cookie);
 		req.session.destroy();
 	}
 	res.redirect('/');
@@ -129,6 +135,7 @@ router.post('/devices/names', (req, res) => {
 		const data = req.body;
 		console.log(data);
 		database.changeDeviceName(data.device_name, data.device_id);
+		wss.sendToOwners(data.device_id, "update");
 		res.send("ok");
 	}
 });
@@ -138,6 +145,7 @@ router.delete('/devices', (req, res) => {
 		const data = req.body;
 		console.log(data);
 		database.deleteDevice(data.device_id);
+		wss.sendToOwners(data.device_id, "update");
 		res.send("ok");
 	}
 });
@@ -147,6 +155,7 @@ router.post('/user/devices', (req, res) => {
 	if (req.session.username == "admin") {
 		let user_device = req.body;
 		database.addUserDevice(user_device.user_id , user_device.device_id);
+		wss.sendToUser(user_device.user_id, "update");
 		res.send("ok");
 	}
 });
@@ -155,6 +164,7 @@ router.delete('/user/devices', (req, res) => {
 	if (req.session.username == "admin") {
 		let user_device = req.body;
 		database.deleteUserDevice(user_device.user_id , user_device.device_id);
+		wss.sendToUser(user_device.user_id, "update");
 		res.send("ok");
 	}
 });
@@ -181,6 +191,7 @@ router.delete('/users', (req, res) => {
 	if (req.session.username == "admin") {
 		let user = req.body;
 		database.deleteUser(user.user_id);
+		wss.terminateUser(user.user_id);
 		res.send("ok");
 	}
 });

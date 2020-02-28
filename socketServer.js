@@ -14,45 +14,45 @@ const server = net.createServer(serverFunc);
 
 function serverFunc(socket) {
 	socket.setEncoding('utf-8');
-	socket.code = "NEW";
+	socket.id = "NEW";
 	socket.write('Connected\r\n');
-	console.log(`Client: ${socket.code} connected!`);
+	console.log(`Client: ${socket.id} connected!`);
 //	socket.setTimeout(4000);
 	
 	socket.on('data', data => {
-		console.log(`From: ${socket.code} ${data}`);
+		console.log(`From: ${socket.id} ${data}`);
 		data = encodeMessage(data);
 		console.log(data.id, data.value);
 		if (data.value == PAIRING) {
-			socket.code = getModuleCode(data.id);
-			clients.set(socket.code, socket);
+			socket.id = data.id;
+			clients.set(data.id, socket);
 			database.addDevice(data.id);
 			setTimeout(() => {
-				database.activateModule(socket.code);	//NEW
+				database.activateModule(socket.id);	//NEW
 				wss.sendToAll('update');
 			}, 500)
 		}
-		else if (data.id != 0) {
-			database.changeDeviceValue(data.value, data.id);
+		else if (data.value != undefined) {
+			database.changeDeviceValue(data.value, socket.id);
 		}
 		
 		wss.sendToAll(JSON.stringify(data));
 	});
 	
 	socket.on('close', () => {
-		clients.delete(socket.code);
-		console.log(`Client: ${socket.code} left`);
-		database.deactivateModule(socket.code);
-		database.resetModuleValues(socket.code);
+		clients.delete(socket.id);
+		console.log(`Client: ${socket.id} left`);
+		database.deactivateModule(socket.id);
+		database.resetModuleValues(socket.id);
 		wss.sendToAll('update');
 	});
 	
 	
 	socket.on('timeout', () => {
-		clients.delete(socket.code);
-		database.deactivateModule(socket.code);
-		database.resetModuleValues(socket.code);
-		console.log(`Client: ${socket.code} left due  timeout`);
+		clients.delete(socket.id);
+		database.deactivateModule(socket.id);
+		database.resetModuleValues(socket.id);
+		console.log(`Client: ${socket.id} left due  timeout`);
 		console.log(clients);
 		wss.sendToAll('update');
 	});
@@ -88,7 +88,7 @@ exports.listen = (PORT, IP) => {
 
 exports.sendToDevice = (id, message) => {
 	console.log(id, message);
-	client = clients.get(getModuleCode(id));
+	client = clients.get(id);
 	if (client) {
 		client.write(decodeMessage(id, message));
 	}
