@@ -313,6 +313,7 @@ findDevices(devices => {
 });
 
 
+
 exports.getDeviceValue = getDeviceValue;
 
 exports.activateModule = activateModule;

@@ -167,7 +167,7 @@ function createSlider(element) {
 	slider.setAttribute('step', '1');
 	slider.id = element.device_id;
 	slider.value = element.device_value%1000;
-	slider.oninput = sliderDrag;
+	slider.onchange = sliderDrag;
 	slider.onclick = sliderClick;
 	slider.onmouseup = sliderMouseUp;
 	if (element.device_value >= 1000) {
@@ -196,7 +196,7 @@ function createRgb(element) {
 	slider.setAttribute('step', '1');
 	slider.id = element.device_id;
 	slider.value = element.device_value%100;
-	slider.oninput = sliderRgbDrag;
+	slider.onchange = sliderRgbDrag;
 	slider.onclick = sliderRgbClick;
 	slider.onmouseup = sliderRgbMouseUp;
 	if (element.device_value >= 1000) {

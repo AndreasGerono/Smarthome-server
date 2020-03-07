@@ -1,6 +1,5 @@
 const connection = require('../database');
 const passwordHash = require('password-hash');
-const usersMap = require('../usersMap');
 
 
 module.exports = (req,res) => {
@@ -14,10 +13,10 @@ module.exports = (req,res) => {
       if (passwordHash.verify(password,result[0].user_password)) {
         req.session.loggedin = true;
         req.session.username = username;
+        req.session.user_id = result[0].user_id;
         res.redirect('/home');
         res.end();
         console.log(username+' logged in!')
-        usersMap.storeUser(req.headers.cookie, username);
       }
       else {
         res.redirect('/home/incorrect');

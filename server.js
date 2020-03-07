@@ -52,17 +52,17 @@ wss.listen(WS_PORT);
 
 wss.on('connection', (ws,req) => {
       wss.setClientId(ws, req);
-      console.log(req.headers.cookie);
       ws.on('message', message => {
-        message = JSON.parse(message)
+        message = JSON.parse(message);
         database.changeDeviceValue(message.value, message.id);
         socketServer.sendToDevice(message.id, message.value);
         wss.sendToOthers('update', ws);
         console.log('Message:', message);
+
         
       });
       ws.on('close', err =>{
-        wss.terminateOthers(ws);
+//        wss.terminateOthers(ws);
         console.log('disconnected on error:',err);
       });
       console.log('Client connected!');

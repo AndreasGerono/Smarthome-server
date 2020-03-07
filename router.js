@@ -3,7 +3,6 @@ const path = require('path');
 const ip = require('ip');
 const router = express.Router();
 
-const usersMap = require('./usersMap');
 const database = require('./database');
 const wss = require('./webSocket');
 
@@ -43,6 +42,7 @@ router.get('/home', (req,res) => {
 	else {
 		res.redirect('/');
 	}
+	
 });
 
 router.get('/manage', (req,res) => {	
@@ -65,8 +65,6 @@ router.get('/contact', (req,res) => {
 router.get('/logout', (req,res) => {
 	if (req.session.loggedin) {
 		console.log(req.session.username+' logged out!');
-		console.log(req.headers.cookie);
-		usersMap.removeUser(req.headers.cookie);
 		req.session.destroy();
 	}
 	res.redirect('/');

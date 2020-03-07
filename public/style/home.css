@@ -111,11 +111,10 @@
 	background-color: red;
 }
 .column .colors button[value = "2"]{
-	background-color: green;
+	background-color: blue;
 }
 .column .colors button[value = "3"]{
-	background-color: blue;
-
+	background-color: green;
 }
 
 .disabled{
