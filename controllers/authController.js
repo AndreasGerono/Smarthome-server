@@ -4,7 +4,7 @@ const passwordHash = require('password-hash');
 
 module.exports = (req,res) => {
   
-  const username = req.body.username;  
+  const username = req.body.username.toLowerCase();  
   const password = req.body.password;
   
   connection.findUser(username, result => {

@@ -66,43 +66,42 @@ body{
 
 @media (max-width:600px) {
 	
-	.menu-toggle{
-		display: block;
-		height: 30px;
-	}
-
-	.menu-toggle:checked {
-		display: block;
-		height: 10px;
-	}
-	
-	.navbar{
-		position: relative;
-		top: 0;
-		left: 0;
-		flex-direction: column;
-		width: 100%;
-		justify-content: center;
-		align-items: center;
-/*		border-bottom: none;*/
-	}
-	
-	.navbar a, button {
-		display: flex;
-		justify-content: center;
-		padding: 0.5em 0;
-		width: 100%;
-		
-		border-bottom: 1px solid rgb(100,100,100);
-
-	}
-	
-	.navbar button{
-		border: 1px solid rgb(100,100,100);
-		border-top: none;
-		border-left: none;
-		border-right: none;
-	}
+/*	.menu-toggle{*/
+/*		display: block;*/
+/*		height: 30px;*/
+/*	}*/
+/**/
+/*	.menu-toggle:checked {*/
+/*		display: block;*/
+/*		height: 10px;*/
+/*	}*/
+/*	*/
+/*	.navbar{*/
+/*		position: relative;*/
+/*		top: 0;*/
+/*		left: 0;*/
+/*		flex-direction: column;*/
+/*		width: 100%;*/
+/*		justify-content: center;*/
+/*		align-items: center;*/
+/*/*		border-bottom: none;*/*/
+/*	}*/
+/*	*/
+/*	.navbar a, button {*/
+/*		display: flex;*/
+/*		justify-content: center;*/
+/*		padding: 0.5em 0;*/
+/*		width: 100%;*/
+/*		border-bottom: 1px solid rgb(100,100,100);*/
+/*	}*/
+/*	*/
+/*	.navbar button{*/
+/*		border: 1px solid rgb(100,100,100);*/
+/*		border-top: none;*/
+/*		border-left: none;*/
+/*		border-right: none;*/
+/*	}*/
+/*	*/
 	
 	
 }

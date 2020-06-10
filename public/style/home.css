@@ -100,7 +100,7 @@
 .column .colors {
 	margin: auto;
 	margin-top: 10px;
-	flex-wrap: wrap;
+/*	flex-wrap: wrap-reverse;*/
 	max-width: 105px;
 }
 
@@ -178,10 +178,8 @@
 		flex-direction: column;
 	}
 	
-	.switch{
-		display: flex;
-		flex-direction: column;
-		align-items: center;
+	.column{
+		margin-bottom: 20px;
 	}
 	
 }
