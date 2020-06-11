@@ -197,7 +197,7 @@ function createRgb(element) {
 	slider.id = element.device_id;
 	slider.value = element.device_value%100;
 	slider.onchange = sliderRgbDrag;
-	slider.onclick = sliderRgbClick;
+	div.onclick = sliderRgbClick;
 	slider.onmouseup = sliderRgbMouseUp;
 	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
@@ -280,28 +280,29 @@ function sliderDrag() {
 //RGB
 
 function sliderRgbClick() {
-	let currentColor = this.parentElement.currentColor;
-	let value = (currentColor*100 + parseInt(this.value));
-	if (this.style.background === colorEnable) {
-		this.style.background = colorDisable;
+	let elem = this.childNodes[1];
+	let currentColor = this.currentColor;
+	let value = (currentColor*100 + parseInt(elem.value));
+	if (elem.style.background === colorEnable) {
+		elem.style.background = colorDisable;
 	}
 	
 	else {
-		this.style.background = colorEnable;
+		elem.style.background = colorEnable;
 		value += 1000;
 	}
 	
 	value = value.toString();
-	socket.send(formatData(this.id, value));
-	console.log(formatData(this.id, value));
+	socket.send(formatData(elem.id, value));
+	console.log(formatData(elem.id, value));
 }
 
 function sliderRgbMouseUp() {
-	setTimeout(()=>this.onclick = sliderRgbClick, 100);	
+	setTimeout(()=>this.parentNode.onclick = sliderRgbClick, 100);	
 }
 
 function sliderRgbDrag() {
-	this.onclick = null;
+	this.parentNode.onclick = null;
 	let currentColor = this.parentElement.currentColor;
 	let value = currentColor*100 + parseInt(this.value);
 		
@@ -315,7 +316,8 @@ function sliderRgbDrag() {
 }
 
 
-function colorButtonOnClick() {
+function colorButtonOnClick(event) {
+	event.stopPropagation()
 	this.parentElement.parentElement.currentColor = this.value;
 	let sliderVal =  this.parentNode.parentNode.children[1].value;
 	let value = 1000 + parseInt(this.value)*100 + parseInt(sliderVal);
