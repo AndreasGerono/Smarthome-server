@@ -168,7 +168,7 @@ function createSlider(element) {
 	slider.id = element.device_id;
 	slider.value = element.device_value%1000;
 	slider.onchange = sliderDrag;
-	slider.onclick = sliderClick;
+	para.onclick = sliderClick;
 	slider.onmouseup = sliderMouseUp;
 	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
@@ -197,7 +197,7 @@ function createRgb(element) {
 	slider.id = element.device_id;
 	slider.value = element.device_value%100;
 	slider.onchange = sliderRgbDrag;
-	div.onclick = sliderRgbClick;
+	para.onclick = sliderRgbClick;
 	slider.onmouseup = sliderRgbMouseUp;
 	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
@@ -243,29 +243,30 @@ function switchClick() {
 
 
 function sliderClick() {
-	var value = parseInt(this.value);
-	if (this.style.background === colorEnable) {
-		this.style.background = colorDisable;
+	let elem = this.parentNode.childNodes[1];
+	let value = parseInt(elem.value);
+	if (elem.style.background === colorEnable) {
+		elem.style.background = colorDisable;
 	}
 	
 	else {
-		this.style.background = colorEnable;
+		elem.style.background = colorEnable;
 		value += 1000;
 	}
 	
 	value = value.toString();
-	socket.send(formatData(this.id, value));
-	console.log(formatData(this.id, value));
+	socket.send(formatData(elem.id, value));
+	console.log(formatData(elem.id, value));
 }
 
 function sliderMouseUp() {
-	setTimeout(()=>this.onclick = sliderClick, 100);
+//	setTimeout(()=>this.onclick = sliderClick, 100);
 }
 
 
 function sliderDrag() {
-	this.onclick = null;
-	var value = parseInt(this.value);
+	
+	let value = parseInt(this.value);
 		
 	if (this.style.background === colorEnable) {
 		value += 1000;
@@ -280,8 +281,8 @@ function sliderDrag() {
 //RGB
 
 function sliderRgbClick() {
-	let elem = this.childNodes[1];
-	let currentColor = this.currentColor;
+	let elem = this.parentNode.childNodes[1];
+	let currentColor = this.parentNode.currentColor;
 	let value = (currentColor*100 + parseInt(elem.value));
 	if (elem.style.background === colorEnable) {
 		elem.style.background = colorDisable;
@@ -298,11 +299,13 @@ function sliderRgbClick() {
 }
 
 function sliderRgbMouseUp() {
-	setTimeout(()=>this.parentNode.onclick = sliderRgbClick, 100);	
+//	event.stopPropagation();
+//	setTimeout(()=>this.parentNode.onclick = sliderRgbClick, 100);	
 }
 
 function sliderRgbDrag() {
-	this.parentNode.onclick = null;
+//	event.stopPropagation();
+//	this.parentNode.onclick = null;
 	let currentColor = this.parentElement.currentColor;
 	let value = currentColor*100 + parseInt(this.value);
 		
@@ -317,7 +320,7 @@ function sliderRgbDrag() {
 
 
 function colorButtonOnClick(event) {
-	event.stopPropagation()
+//	event.stopPropagation();
 	this.parentElement.parentElement.currentColor = this.value;
 	let sliderVal =  this.parentNode.parentNode.children[1].value;
 	let value = 1000 + parseInt(this.value)*100 + parseInt(sliderVal);
