@@ -18,7 +18,7 @@ function serverFunc(socket) {
 	socket.write('Connected\r\n');
 	console.log(`Client: ${socket.id} connected!`);
 	socket.write("lol");
-//	socket.setTimeout(4000);
+	socket.setTimeout(10000);
 	socket.on('data', data => {
 		console.log(`From: ${socket.id} ${data}`);
 		data = encodeMessage(data);
@@ -37,9 +37,9 @@ function serverFunc(socket) {
 			database.changeDeviceValue(data.value, socket.id);
 		}
 		
-//		else if (socket.id != "NEW") {
-//			database.activateModule(socket.id);	
-//		}
+		else if (socket.id != "NEW") {
+			database.activateModule(socket.id);	
+		}
 	
 		
 		
@@ -125,7 +125,6 @@ function decodeMessage(id, message){
 function encodeMessage(message) {
 	
 	message = parseFloat(message);
-	
 	if (isNaN(message)) {
 		return 0;
 	}

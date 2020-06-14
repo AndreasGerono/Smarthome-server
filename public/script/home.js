@@ -207,21 +207,24 @@ function createRgb(element) {
 	
 	let rgb_div = document.createElement('div');
 	rgb_div.className = "colors";
-	rgb_div.appendChild(createColorButton(0));
-	rgb_div.appendChild(createColorButton(1));
-	rgb_div.appendChild(createColorButton(2));
-	rgb_div.appendChild(createColorButton(3));
+	rgb_div.appendChild(createColorButton(0, element));
+	rgb_div.appendChild(createColorButton(1, element));
+	rgb_div.appendChild(createColorButton(2, element));
+	rgb_div.appendChild(createColorButton(3, element));
 	div.appendChild(rgb_div);
 	div.currentColor = 0;
 	containers[1].appendChild(div);
 }
 
 
-function createColorButton(color) {
+function createColorButton(color, elem) {
 	let button = document.createElement('button');
 	button.className = "rgbButton";
 	button.value = color;
 	button.onclick = colorButtonOnClick;
+	if (elem.device_is_active == 0) 
+		button.disabled = true;
+		
 	return button;
 }
 

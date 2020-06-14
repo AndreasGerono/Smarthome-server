@@ -310,8 +310,13 @@ function usersDevices(callback) {
 
 findDevices(devices => {
 	console.log(devices);
+	devices.forEach(device => {
+		resetModuleValues(device.device_id);
+		deactivateModule(device.device_id);
+	})
 });
 
+showUsers();
 
 
 
