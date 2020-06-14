@@ -85,7 +85,7 @@ function updateDevices() {
 		}
 		catch(err){
 			console.log('Unable to download devices!',err);
-//			location.reload();
+			location.reload();
 		}
 	}
 }
@@ -158,6 +158,7 @@ function createSlider(element) {
 	if (element.device_is_active == 0) {
 		div.className = 'brightness disabled';
 		slider.disabled = true;
+		para.onclick = sliderClick;
 	}
 	else {
 		div.className = 'brightness enabled';
@@ -168,8 +169,6 @@ function createSlider(element) {
 	slider.id = element.device_id;
 	slider.value = element.device_value%1000;
 	slider.onchange = sliderDrag;
-	para.onclick = sliderClick;
-	slider.onmouseup = sliderMouseUp;
 	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
 	}
@@ -189,6 +188,7 @@ function createRgb(element) {
 		slider.disabled = true;
 	}
 	else {
+		para.onclick = sliderRgbClick;
 		div.className = 'brightness enabled';
 	}
 	slider.setAttribute('type', 'range');
@@ -197,8 +197,6 @@ function createRgb(element) {
 	slider.id = element.device_id;
 	slider.value = element.device_value%100;
 	slider.onchange = sliderRgbDrag;
-	para.onclick = sliderRgbClick;
-	slider.onmouseup = sliderRgbMouseUp;
 	if (element.device_value >= 1000) {
 		slider.style.background = colorEnable;
 	}
@@ -229,7 +227,6 @@ function createColorButton(color, elem) {
 }
 
 function switchClick() {
-	
 	if (parseInt(this.value)) {
 		this.textContent = 'OFF';
 		this.value = 0;
@@ -240,7 +237,6 @@ function switchClick() {
 	}
 	socket.send(formatData(this.id, this.value));
 	console.log(formatData(this.id, this.value));
-
 }
 
 
@@ -263,7 +259,7 @@ function sliderClick() {
 }
 
 function sliderMouseUp() {
-//	setTimeout(()=>this.onclick = sliderClick, 100);
+	setTimeout(()=>this.onclick = sliderClick, 100);
 }
 
 
@@ -302,13 +298,10 @@ function sliderRgbClick() {
 }
 
 function sliderRgbMouseUp() {
-//	event.stopPropagation();
-//	setTimeout(()=>this.parentNode.onclick = sliderRgbClick, 100);	
+	setTimeout(()=>this.parentNode.onclick = sliderRgbClick, 100);	
 }
 
 function sliderRgbDrag() {
-//	event.stopPropagation();
-//	this.parentNode.onclick = null;
 	let currentColor = this.parentElement.currentColor;
 	let value = currentColor*100 + parseInt(this.value);
 		
@@ -323,7 +316,6 @@ function sliderRgbDrag() {
 
 
 function colorButtonOnClick(event) {
-//	event.stopPropagation();
 	this.parentElement.parentElement.currentColor = this.value;
 	let sliderVal =  this.parentNode.parentNode.children[1].value;
 	let value = 1000 + parseInt(this.value)*100 + parseInt(sliderVal);
@@ -333,28 +325,7 @@ function colorButtonOnClick(event) {
 	console.log(formatData(id, value));
 }
 
-//function disableAll() {
-//	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
-//	try{
-//		elements.forEach(element => {
-//		element.children[1].disabled = true;
-//		console.log(element);
-//		});
-//	}
-//	catch(error){};
-//}
-//
-//function enableAll() {
-//	let elements = document.querySelectorAll('.rgb, .switch , .brightness');
-//	try{
-//		elements.forEach(element => {
-//		element.children[1].disabled = false;
-////		element.classList.remove("disabled");
-////		element.classList.add("enabled");
-//		});
-//	}
-//	catch(error){};
-//}
+
 
 function removeDevices() {
 	let elements = document.querySelectorAll('.switch, .slider, .sensor, .rgb, .brightness');

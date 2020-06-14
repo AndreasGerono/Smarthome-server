@@ -29,11 +29,12 @@ function serverFunc(socket) {
 			socket.id = data.id;
 			clients.set(data.id, socket);
 			database.addDevice(data.id);
-			wss.sendToOwners(socket.id, 'update');
 			database.activateModule(socket.id);	
+			wss.sendToOwners(socket.id, 'update');
 		}
 		else if (data.value != undefined) {
 			database.changeDeviceValue(data.value, socket.id);
+			wss.sendToOwners(socket.id, 'update');
 		}
 		
 		else if (socket.id != "NEW") {
