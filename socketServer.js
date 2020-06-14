@@ -17,7 +17,6 @@ function serverFunc(socket) {
 	socket.id = "NEW";
 	socket.write('Connected\r\n');
 	console.log(`Client: ${socket.id} connected!`);
-	socket.write("lol");
 	socket.setTimeout(10000);
 	socket.on('data', data => {
 		console.log(`From: ${socket.id} ${data}`);
